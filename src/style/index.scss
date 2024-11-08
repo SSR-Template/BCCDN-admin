@@ -1,7 +1,7 @@
-@use "./transition";
-@use "./element-plus";
-@use "./sidebar";
-@use "./dark";
+@import "./transition";
+@import "./element-plus";
+@import "./sidebar";
+@import "./dark";
 
 /* 自定义全局 CssVar */
 :root {

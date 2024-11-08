@@ -679,5 +679,5 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-@use url("./index.scss");
+@import url("./index.scss");
 </style>

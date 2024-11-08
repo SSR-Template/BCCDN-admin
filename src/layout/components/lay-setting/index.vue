@@ -196,13 +196,6 @@ const pClass = computed(() => {
 const themeOptions = computed<Array<OptionsType>>(() => {
   return [
     {
-      label: "浅色",
-      icon: DayIcon,
-      theme: "light",
-      tip: "清新启航，点亮舒适的工作界面",
-      iconAttrs: { fill: isDark.value ? "#fff" : "#000" }
-    },
-    {
       label: "深色",
       icon: DarkIcon,
       theme: "dark",
