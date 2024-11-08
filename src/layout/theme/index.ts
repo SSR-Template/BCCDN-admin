@@ -9,7 +9,7 @@ const themeColors = {
   /* 亮白色 */
   light: {
     subMenuActiveText: "#000000d9",
-    menuBg: "#fff",
+    menuBg: "#002979",
     menuHover: "#f6f6f6",
     subMenuBg: "#fff",
     subMenuActiveBg: "#e0ebf6",
@@ -21,7 +21,7 @@ const themeColors = {
   /* 道奇蓝 */
   default: {
     subMenuActiveText: "#fff",
-    menuBg: "#001529",
+    menuBg: "#002979",
     menuHover: "rgb(64 145 247 / 15%)",
     subMenuBg: "#0f0303",
     subMenuActiveBg: "#4091f7",

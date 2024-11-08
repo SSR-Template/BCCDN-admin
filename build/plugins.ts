@@ -22,7 +22,6 @@ export function getPluginsList(
   const lifecycle = process.env.npm_lifecycle_event;
   return [
     vue(),
-    // jsx、tsx语法支持
     vueJsx(),
     checker({
       typescript: true,
