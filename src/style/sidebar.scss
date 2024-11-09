@@ -207,7 +207,7 @@
     & .el-sub-menu .el-menu-item {
       min-width: $sideBarWidth !important;
       font-size: 14px;
-      background-color: $subMenuBg !important;
+      background-color: $subMenuBg;
     }
 
     /* 有子集的激活菜单左侧小竖条 */
@@ -305,7 +305,7 @@
     .el-menu .el-sub-menu__title {
       min-width: $sideBarWidth !important;
       font-size: 14px;
-      background-color: $subMenuBg !important;
+      background-color: $subMenuBg;
     }
 
     .el-menu-item,
