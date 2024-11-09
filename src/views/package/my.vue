@@ -8,6 +8,7 @@ import {
 } from "@/api/package";
 import { onMounted, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
+import FormTitle from "@/components/FormTitle/index.vue";
 
 const pagination = reactive({
   page: 1,
@@ -138,11 +139,7 @@ onMounted(() => {
 
   <el-dialog v-model="detailModal" title="套餐详情" append-to-body>
     <div class="space-y-4">
-      <div
-        class="pl-3 border-l-4 border-[var(--el-color-primary)] text-sm font-bold"
-      >
-        使用情况
-      </div>
+      <form-title title="使用情况" />
       <el-table
         border
         :data="usageTableData"
@@ -165,11 +162,7 @@ onMounted(() => {
         />
         <el-table-column prop="usage" label="已使用" show-overflow-tooltip />
       </el-table>
-      <div
-        class="pl-3 border-l-4 border-[var(--el-color-primary)] text-sm font-bold"
-      >
-        套餐详情
-      </div>
+      <form-title title="套餐详情" />
       <div class="grid grid-cols-2 gap-2 text-sm">
         <div>名称:</div>
         <div>{{ choosePackage.name }}</div>
@@ -198,11 +191,7 @@ onMounted(() => {
         <div>到期时间:</div>
         <div>{{ choosePackage.end_at2 }}</div>
       </div>
-      <div
-        class="pl-3 border-l-4 border-[var(--el-color-primary)] text-sm font-bold"
-      >
-        升级包
-      </div>
+      <form-title title="升级包" />
       <el-table
         border
         :data="upgradeTableData"
