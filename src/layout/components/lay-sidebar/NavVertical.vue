@@ -132,6 +132,15 @@ onBeforeUnmount(() => {
 }
 
 :deep(.el-menu) {
+  .el-sub-menu__title {
+    width: calc(100% - 10px);
+    margin-left: 5px;
+  }
+
+  .el-sub-menu .el-sub-menu__icon-arrow {
+    width: 20px;
+  }
+
   .is-active {
     > .el-sub-menu__title {
       color: #002979 !important;
@@ -139,12 +148,11 @@ onBeforeUnmount(() => {
       border-radius: 10px;
     }
   }
-
-  .is-active,
-  .is-opened {
-    .el-sub-menu__title {
-      margin: 0 10px;
-    }
+}
+.openSidebar :has(.is-active) {
+  .submenu-title-noDropdown,
+  .el-sub-menu__title {
+    margin: 0 10px;
   }
 }
 </style>
