@@ -23,10 +23,12 @@
   }
 }
 
-.el-table {
-  .el-table__body {
-    .cell {
-      padding: 8px 0 !important;
+.el-card {
+  >.el-table {
+    .el-table__body {
+      .cell {
+        padding: 8px 0 !important;
+      }
     }
   }
 }

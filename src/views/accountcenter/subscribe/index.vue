@@ -1,12 +1,11 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import { getSubscribe } from "@/api/subscribe";
+import { getSubscribe } from "@/api/accountcenter";
 
 const tableData = ref([]);
 const getList = async () => {
   try {
     const { data } = await getSubscribe();
-    console.log("data", data);
     tableData.value = data;
   } catch (error) {}
 };

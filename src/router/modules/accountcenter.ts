@@ -38,6 +38,38 @@ export default {
       meta: {
         title: "消息查询"
       }
+    },
+    {
+      path: "/accountcenter/myorder",
+      name: "MyOrder",
+      component: () => import("@/views/accountcenter/myorder/index.vue"),
+      meta: {
+        title: "消费记录"
+      }
+    },
+    {
+      path: "/accountcenter/accountlog",
+      name: "AccountLog",
+      component: () => import("@/views/accountcenter/accountlog/index.vue"),
+      meta: {
+        title: "登录日志"
+      }
+    },
+    {
+      path: "/accountcenter/actionlog",
+      name: "ActionLog",
+      component: () => import("@/views/accountcenter/actionlog/index.vue"),
+      meta: {
+        title: "操作日志"
+      }
+    },
+    {
+      path: "/accountcenter/apiconfig",
+      name: "ApiConfig",
+      component: () => import("@/views/accountcenter/apiconfig/index.vue"),
+      meta: {
+        title: "API密钥"
+      }
     }
   ]
 } satisfies RouteConfigsTable;
