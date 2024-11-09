@@ -38,8 +38,6 @@ const props = defineProps({
   }
 });
 
-console.log("item", props.item);
-
 const getNoDropdownStyle = computed((): CSSProperties => {
   return {
     width: "100%",

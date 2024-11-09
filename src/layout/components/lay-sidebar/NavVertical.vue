@@ -37,8 +37,6 @@ const menuData = computed(() => {
     : usePermissionStoreHook().wholeMenus;
 });
 
-console.log("menuData", menuData);
-
 const defaultActive = computed(() =>
   !isAllEmpty(route.meta?.activePath) ? route.meta.activePath : route.path
 );
@@ -47,7 +45,6 @@ function getSubMenuData() {
   let path = "";
   path = defaultActive.value;
   subMenuData.value = [];
-  console.log(usePermissionStoreHook().wholeMenus);
 
   // path的上级路由组成的数组
   const parentPathArr = getParentPaths(
@@ -132,5 +129,15 @@ onBeforeUnmount(() => {
 <style scoped>
 :deep(.el-loading-mask) {
   opacity: 0.45;
+}
+
+:deep(.el-menu) {
+  .is-active {
+    > .el-sub-menu__title {
+      color: #002979 !important;
+      background-color: #fff !important;
+      border-radius: 10px;
+    }
+  }
 }
 </style>

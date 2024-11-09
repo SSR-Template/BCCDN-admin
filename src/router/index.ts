@@ -117,6 +117,14 @@ router.beforeEach((to: ToRouteType, _from, next) => {
     whiteList.includes(to.fullPath) ? next(_from.fullPath) : next();
   }
 
+  // 刷新
+  if (
+    usePermissionStoreHook().wholeMenus.length === 0 &&
+    to.path !== "/login"
+  ) {
+    usePermissionStoreHook().handleWholeMenus();
+  }
+
   if (userToken) {
     // name为超链接
     if (externalLink) {

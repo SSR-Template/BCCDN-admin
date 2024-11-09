@@ -196,8 +196,13 @@
       margin: 4px 0;
       clear: both;
       content: "";
-      background: var(--el-color-primary) !important;
-      border-radius: 3px;
+      background: linear-gradient(
+        90deg,
+        #4b6ba7,
+        rgb(48 83 148 / 62%) 99.99%,
+        rgb(28 65 133 / 0%)
+      ) !important;
+      border-radius: 32px;
     }
 
     .el-menu .el-menu--inline .el-sub-menu__title,
@@ -312,8 +317,13 @@
       inset: 0 8px;
       clear: both;
       content: "";
-      background: var(--el-color-primary) !important;
-      border-radius: 3px;
+      background: linear-gradient(
+        90deg,
+        #4b6ba7,
+        rgb(48 83 148 / 62%) 99.99%,
+        rgb(28 65 133 / 0%)
+      ) !important;
+      border-radius: 32px;
     }
 
     .el-menu-item,
@@ -404,8 +414,13 @@
       inset: 0 5px;
       clear: both;
       content: "";
-      background: var(--el-color-primary) !important;
-      border-radius: 3px;
+      background: linear-gradient(
+        90deg,
+        #4b6ba7,
+        rgb(48 83 148 / 62%) 99.99%,
+        rgb(28 65 133 / 0%)
+      ) !important;
+      border-radius: 32px;
     }
   }
 
