@@ -1,162 +1,83 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import "plus-pro-components/es/components/form/style/css";
-import {
-  type PlusColumn,
-  type FieldValues,
-  PlusForm
-} from "plus-pro-components";
+import { computed, ref } from "vue";
+import { useDark, useECharts } from "@pureadmin/utils";
 
-const state = ref<FieldValues>({
-  status: "1",
-  name: "",
-  rate: 4,
-  progress: 100,
-  switch: true,
-  time: new Date().toString(),
-  endTime: []
-});
+const dateType = ref("1");
+const tableData = ref([]);
+const customerDate = ref([]);
+const isCustomer = computed(() => dateType.value === "customer");
 
-const rules = {
-  name: [
+const bandwidthRef = ref();
+const { setOptions: setBandwidthOptions } = useECharts(bandwidthRef);
+
+setBandwidthOptions({
+  title: {
+    text: "带宽"
+  },
+  tooltip: {
+    trigger: "axis",
+    axisPointer: {
+      type: "shadow"
+    }
+  },
+  xAxis: {
+    type: "category",
+    data: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+  },
+  yAxis: {
+    type: "value"
+  },
+  series: [
     {
-      required: true,
-      message: "请输入名称"
+      data: [120, 200, 150, 80, 70, 110, 130],
+      type: "line",
+      symbol: "triangle",
+      symbolSize: 20,
+      lineStyle: {
+        color: "#5470C6",
+        width: 4,
+        type: "dashed"
+      },
+      itemStyle: {
+        borderWidth: 3,
+        borderColor: "#EE6666",
+        color: "yellow"
+      }
     }
   ]
-};
-
-const columns: PlusColumn[] = [
-  {
-    label: "名称",
-    width: 120,
-    prop: "name",
-    valueType: "copy",
-    tooltip: "我是名称"
-  },
-  {
-    label: "状态",
-    width: 120,
-    prop: "status",
-    valueType: "select",
-    options: [
-      {
-        label: "未解决",
-        value: "0",
-        color: "red"
-      },
-      {
-        label: "已解决",
-        value: "1",
-        color: "blue"
-      },
-      {
-        label: "解决中",
-        value: "2",
-        color: "yellow"
-      },
-      {
-        label: "失败",
-        value: "3",
-        color: "red"
-      }
-    ]
-  },
-  {
-    label: "执行进度",
-    width: 200,
-    prop: "progress"
-  },
-  {
-    label: "评分",
-    width: 200,
-    prop: "rate",
-    valueType: "rate"
-  },
-  {
-    label: "是否显示",
-    width: 100,
-    prop: "switch",
-    valueType: "switch"
-  },
-  {
-    label: "时间",
-    prop: "time",
-    valueType: "date-picker"
-  },
-  {
-    label: "数量",
-    prop: "number",
-    valueType: "input-number",
-    fieldProps: { precision: 2, step: 2 }
-  },
-  {
-    label: "梦想",
-    prop: "gift",
-    valueType: "radio",
-    options: [
-      {
-        label: "诗",
-        value: "0"
-      },
-      {
-        label: "远方",
-        value: "1"
-      },
-      {
-        label: "美食",
-        value: "2"
-      }
-    ]
-  },
-  {
-    label: "到期时间",
-    prop: "endTime",
-    valueType: "date-picker",
-    fieldProps: {
-      type: "datetimerange",
-      startPlaceholder: "请选择开始时间",
-      endPlaceholder: "请选择结束时间"
-    }
-  },
-  {
-    label: "说明",
-    prop: "desc",
-    valueType: "textarea",
-    fieldProps: {
-      maxlength: 10,
-      showWordLimit: true,
-      autosize: { minRows: 2, maxRows: 4 }
-    }
-  }
-];
-
-const handleChange = (values: FieldValues, prop: PlusColumn) => {
-  console.log(values, prop, "change");
-};
-const handleSubmit = (values: FieldValues) => {
-  console.log(values, "Submit");
-};
-const handleSubmitError = (err: any) => {
-  console.log(err, "err");
-};
-const handleReset = () => {
-  console.log("handleReset");
-};
+});
 </script>
 
 <template>
   <el-card shadow="always">
-    <template #header>我的转发</template>
-    <PlusForm
-      v-model="state"
-      :columns="columns"
-      :rules="rules"
-      label-position="right"
-      @change="handleChange"
-      @submit="handleSubmit"
-      @submit-error="handleSubmitError"
-      @reset="handleReset"
-    />
+    <template #header>带宽流量</template>
+    <el-space :size="0">
+      <el-radio-group v-model="dateType" size="large">
+        <el-radio-button label="1小时实况" value="1" />
+        <el-radio-button label="近6小时" value="6" />
+        <el-radio-button label="近12小时" value="12" />
+        <el-radio-button v-if="!isCustomer" label="自定义" value="customer" />
+      </el-radio-group>
+      <el-date-picker
+        v-if="isCustomer"
+        v-model="customerDate"
+        size="large"
+        class="h-full"
+        type="datetimerange"
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期"
+      />
+    </el-space>
+    <br />
+    <el-space class="w-full mt-6" justify="center" wrap>
+      <el-text type="primary">峰值：0.00 Kbps</el-text>
+      <el-text type="success">95%值计费：0.00 Kbps</el-text>
+    </el-space>
+    <div ref="bandwidthRef" class="w-full h-[330px] my-4" />
+    <el-table :data="tableData">
+      <el-table-column prop="content" label="时间" show-overflow-tooltip />
+      <el-table-column prop="action" label="带宽" show-overflow-tooltip />
+    </el-table>
   </el-card>
 </template>

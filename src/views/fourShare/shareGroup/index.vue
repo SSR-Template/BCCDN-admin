@@ -1,30 +1,94 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref } from "vue";
-import "plus-pro-components/es/components/form/style/css";
-import {
-  type PlusColumn,
-  type FieldValues,
-  PlusForm
-} from "plus-pro-components";
+import { useTable, PlusTable, PlusSearch } from "plus-pro-components";
+import "plus-pro-components/es/components/table/style/css";
+import "plus-pro-components/es/components/search/style/css";
+import { type PlusColumn, type FieldValues } from "plus-pro-components";
+import { Download, Printer, Setting } from "@element-plus/icons-vue";
+
+interface TableRow {
+  id: number;
+  name: string;
+  status: string;
+  tag: string;
+  time: Date;
+}
 
 const state = ref<FieldValues>({
   status: "1",
-  name: "",
-  rate: 4,
-  progress: 100,
-  switch: true,
-  time: new Date().toString(),
-  endTime: []
+  name: ""
 });
 
-const rules = {
-  name: [
-    {
-      required: true,
-      message: "请输入名称"
-    }
-  ]
+const searchRef = ref();
+
+const TestServe = {
+  getList: async () => {
+    const data = Array.from({ length: 3 }).map((item, index) => {
+      return {
+        id: index,
+        name: index + "name",
+        status: String(index % 3),
+        tag:
+          index === 1
+            ? "success"
+            : index === 2
+              ? "warning"
+              : index === 3
+                ? "info"
+                : "danger",
+        time: new Date()
+      };
+    });
+    return {
+      data: data as TableRow[]
+    };
+  }
 };
+
+const { tableData } = useTable<TableRow[]>();
+
+const tableConfig: PlusColumn[] = [
+  {
+    label: "名称",
+    prop: "name"
+  },
+  {
+    label: "状态",
+    prop: "status",
+    valueType: "select",
+    options: [
+      {
+        label: "未解决",
+        value: "0"
+      },
+      {
+        label: "已解决",
+        value: "1"
+      },
+      {
+        label: "解决中",
+        value: "2"
+      },
+      {
+        label: "失败",
+        value: "3"
+      }
+    ]
+  },
+  {
+    label: "标签",
+    prop: "tag",
+    valueType: "tag",
+    fieldProps: (value: string) => {
+      return { type: value };
+    }
+  },
+  {
+    label: "时间",
+    prop: "time",
+    valueType: "date-picker"
+  }
+];
 
 const columns: PlusColumn[] = [
   {
@@ -61,102 +125,50 @@ const columns: PlusColumn[] = [
         color: "red"
       }
     ]
-  },
-  {
-    label: "执行进度",
-    width: 200,
-    prop: "progress"
-  },
-  {
-    label: "评分",
-    width: 200,
-    prop: "rate",
-    valueType: "rate"
-  },
-  {
-    label: "是否显示",
-    width: 100,
-    prop: "switch",
-    valueType: "switch"
-  },
-  {
-    label: "时间",
-    prop: "time",
-    valueType: "date-picker"
-  },
-  {
-    label: "数量",
-    prop: "number",
-    valueType: "input-number",
-    fieldProps: { precision: 2, step: 2 }
-  },
-  {
-    label: "梦想",
-    prop: "gift",
-    valueType: "radio",
-    options: [
-      {
-        label: "诗",
-        value: "0"
-      },
-      {
-        label: "远方",
-        value: "1"
-      },
-      {
-        label: "美食",
-        value: "2"
-      }
-    ]
-  },
-  {
-    label: "到期时间",
-    prop: "endTime",
-    valueType: "date-picker",
-    fieldProps: {
-      type: "datetimerange",
-      startPlaceholder: "请选择开始时间",
-      endPlaceholder: "请选择结束时间"
-    }
-  },
-  {
-    label: "说明",
-    prop: "desc",
-    valueType: "textarea",
-    fieldProps: {
-      maxlength: 10,
-      showWordLimit: true,
-      autosize: { minRows: 2, maxRows: 4 }
-    }
   }
 ];
 
-const handleChange = (values: FieldValues, prop: PlusColumn) => {
-  console.log(values, prop, "change");
+const getList = async (values?: FieldValues) => {
+  try {
+    const { data } = await TestServe.getList();
+    tableData.value = data;
+  } catch (error) {}
 };
-const handleSubmit = (values: FieldValues) => {
-  console.log(values, "Submit");
+getList();
+
+const handlePrint = () => {
+  window.print();
 };
-const handleSubmitError = (err: any) => {
-  console.log(err, "err");
-};
+
 const handleReset = () => {
-  console.log("handleReset");
+  state.value = {};
 };
 </script>
 
 <template>
   <el-card shadow="always">
-    <template #header>我的转发</template>
-    <PlusForm
-      v-model="state"
-      :columns="columns"
-      :rules="rules"
-      label-position="right"
-      @change="handleChange"
-      @submit="handleSubmit"
-      @submit-error="handleSubmitError"
-      @reset="handleReset"
-    />
+    <PlusTable
+      default-size="large"
+      :columns="tableConfig"
+      :table-data="tableData"
+      :drag-sortable="false"
+      :title-bar="{ title: '表格标题', columnSetting: { dragSort: false } }"
+      :has-toolbar="true"
+    >
+      <template #density-icon> <div /> </template>
+
+      <template #toolbar>
+        <el-button type="primary" circle :icon="Download" />
+        <el-button type="primary" circle :icon="Printer" @click="handlePrint" />
+      </template>
+      <template #column-settings-icon>
+        <el-button class="ml-3" type="primary" circle :icon="Setting" />
+      </template>
+
+      <template #title>
+        <el-button type="primary">新增</el-button>
+        <el-button type="danger">删除</el-button>
+      </template>
+    </PlusTable>
   </el-card>
 </template>
