@@ -12,6 +12,7 @@ import type {
 import { stringify } from "qs";
 import NProgress from "../progress";
 import { getToken, formatToken } from "@/utils/auth";
+import { ElMessage } from "element-plus";
 
 const defaultConfig: AxiosRequestConfig = {
   baseURL: "/api",
@@ -100,6 +101,10 @@ class PureHttp {
         if (PureHttp.initConfig.beforeResponseCallback) {
           PureHttp.initConfig.beforeResponseCallback(response);
           return response.data;
+        }
+        if (response.data.code !== 0) {
+          ElMessage.error(response.data.msg);
+          return Promise.reject(response.data.msg);
         }
         return response.data;
       },

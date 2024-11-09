@@ -197,3 +197,33 @@
     background: rgb(199 201 203); /* 滑块hover颜色 */
   }
 }
+
+.el-dialog {
+  border-radius: 8px !important;
+  padding: 0 !important;
+
+  .el-dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 40px;
+    border-bottom: 1px solid #f2f6fc;
+
+    .el-dialog__title {
+      font-size: 14px;
+      font-weight: bold;
+    }
+  }
+
+  .el-dialog__body {
+    padding: 40px;
+  }
+  .el-dialog__footer {
+    padding: 15px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0 8px;
+    border-top: 1px solid #f2f6fc;
+  }
+}

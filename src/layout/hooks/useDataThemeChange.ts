@@ -84,6 +84,7 @@ export function useDataThemeChange() {
 
   /** 设置 `element-plus` 主题色 */
   const setEpThemeColor = (color: string) => {
+    console.log(color);
     useEpThemeStoreHook().setEpThemeColor(color);
     document.documentElement.style.setProperty("--el-color-primary", color);
     for (let i = 1; i <= 2; i++) {
