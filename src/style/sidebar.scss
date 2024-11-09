@@ -323,7 +323,6 @@
         rgb(48 83 148 / 62%) 99.99%,
         rgb(28 65 133 / 0%)
       ) !important;
-      border-radius: 32px;
     }
 
     .el-menu-item,
@@ -600,6 +599,7 @@ body[layout="vertical"] {
   }
 
   .sidebar-logo-container {
+    color: #fff;
     background: $menuBg;
   }
 

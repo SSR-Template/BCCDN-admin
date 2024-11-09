@@ -311,24 +311,6 @@ onUnmounted(() => removeMatchMedia);
 <template>
   <LayPanel>
     <div class="p-5">
-      <p :class="pClass">整体风格</p>
-      <Segmented
-        resize
-        class="select-none"
-        :modelValue="overallStyle === 'system' ? 2 : dataTheme ? 1 : 0"
-        :options="themeOptions"
-        @change="
-          theme => {
-            theme.index === 1 && theme.index !== 2
-              ? (dataTheme = true)
-              : (dataTheme = false);
-            overallStyle = theme.option.theme;
-            dataThemeChange(theme.option.theme);
-            theme.index === 2 && watchSystemThemeChange();
-          }
-        "
-      />
-
       <p :class="['mt-5', pClass]">主题色</p>
       <ul class="theme-color">
         <li

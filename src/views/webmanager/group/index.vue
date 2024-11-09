@@ -136,6 +136,10 @@ const getList = async (values?: FieldValues) => {
 };
 getList();
 
+const handlePrint = () => {
+  window.print();
+};
+
 const handleReset = () => {
   state.value = {};
 };
@@ -179,7 +183,7 @@ const handleReset = () => {
 
       <template #toolbar>
         <el-button type="primary" circle :icon="Download" />
-        <el-button type="primary" circle :icon="Printer" />
+        <el-button type="primary" circle :icon="Printer" @click="handlePrint" />
       </template>
       <template #column-settings-icon>
         <el-button class="ml-3" type="primary" circle :icon="Setting" />

@@ -63,7 +63,7 @@ const { title, getLogo } = useNav();
       font-size: 18px;
       font-weight: 600;
       line-height: 32px;
-      color: $subMenuActiveText;
+      color: #fff;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
