@@ -2,6 +2,8 @@
 defineOptions({
   name: "Welcome"
 });
+
+console.count("Welcome");
 </script>
 
 <template>

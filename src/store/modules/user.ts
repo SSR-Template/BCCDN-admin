@@ -8,10 +8,11 @@ import {
   storageLocal
 } from "../utils";
 import {
-  type UserResult,
   type RefreshTokenResult,
-  getLogin,
-  refreshTokenApi
+  submitLogin,
+  refreshTokenApi,
+  type LoginResult,
+  type LoginBody
 } from "@/api/user";
 import { useMultiTagsStoreHook } from "./multiTags";
 import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
@@ -65,12 +66,12 @@ export const useUserStore = defineStore({
       this.loginDay = Number(value);
     },
     /** 登入 */
-    async loginByUsername(data) {
-      return new Promise<UserResult>((resolve, reject) => {
-        getLogin(data)
-          .then(data => {
-            if (data?.success) setToken(data.data);
-            resolve(data);
+    async loginByUsername(data: LoginBody) {
+      return new Promise<LoginResult>((resolve, reject) => {
+        submitLogin(data)
+          .then(res => {
+            if (res.code === 0) setToken(res.data.access_token);
+            resolve(res.data);
           })
           .catch(error => {
             reject(error);

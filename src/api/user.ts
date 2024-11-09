@@ -1,4 +1,5 @@
 import { http } from "@/utils/http";
+import type { Response } from "./types";
 
 export type UserResult = {
   success: boolean;
@@ -22,24 +23,33 @@ export type UserResult = {
   };
 };
 
+export interface LoginBody {
+  account: string;
+  password: string;
+  code: string;
+  captcha: string;
+}
+
+export interface LoginResult {
+  access_token: string;
+  type: number;
+  uid: number;
+  username: string;
+}
+
 export type RefreshTokenResult = {
   success: boolean;
   data: {
-    /** `token` */
     accessToken: string;
-    /** 用于调用刷新`accessToken`的接口时所需的`token` */
     refreshToken: string;
-    /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
     expires: Date;
   };
 };
 
-/** 登录 */
-export const getLogin = (data?: object) => {
-  return http.request<UserResult>("post", "/login", { data });
+export const submitLogin = (data: LoginBody) => {
+  return http.post<Response<LoginResult>, unknown>("/login", {}, { data });
 };
 
-/** 刷新`token` */
 export const refreshTokenApi = (data?: object) => {
   return http.request<RefreshTokenResult>("post", "/refresh-token", { data });
 };

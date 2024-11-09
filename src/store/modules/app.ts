@@ -9,7 +9,7 @@ import {
 } from "../utils";
 
 export const useAppStore = defineStore({
-  id: "pure-app",
+  id: "bccon",
   state: (): appType => ({
     sidebar: {
       opened:

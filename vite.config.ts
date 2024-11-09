@@ -23,7 +23,13 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
       // 端口号
       port: VITE_PORT,
       host: "0.0.0.0",
-      proxy: {},
+      proxy: {
+        "/api": {
+          target: "https://cdn.bccdn.com",
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api/, "")
+        }
+      },
       warmup: {
         clientFiles: ["./index.html", "./src/{views,components}/*"]
       }

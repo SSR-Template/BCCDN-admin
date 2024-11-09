@@ -37,9 +37,7 @@ const menuData = computed(() => {
     : usePermissionStoreHook().wholeMenus;
 });
 
-const loading = computed(() =>
-  pureApp.layout === "mix" ? false : menuData.value.length === 0 ? true : false
-);
+console.log("menuData", menuData);
 
 const defaultActive = computed(() =>
   !isAllEmpty(route.meta?.activePath) ? route.meta.activePath : route.path
@@ -49,6 +47,8 @@ function getSubMenuData() {
   let path = "";
   path = defaultActive.value;
   subMenuData.value = [];
+  console.log(usePermissionStoreHook().wholeMenus);
+
   // path的上级路由组成的数组
   const parentPathArr = getParentPaths(
     path,
@@ -88,7 +88,6 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    v-loading="loading"
     :class="['sidebar-container', showLogo ? 'has-logo' : 'no-logo']"
     @mouseenter.prevent="isShow = true"
     @mouseleave.prevent="isShow = false"

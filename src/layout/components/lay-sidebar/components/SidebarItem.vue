@@ -38,6 +38,8 @@ const props = defineProps({
   }
 });
 
+console.log("item", props.item);
+
 const getNoDropdownStyle = computed((): CSSProperties => {
   return {
     width: "100%",
@@ -134,11 +136,11 @@ function resolvePath(routePath) {
       </div>
       <el-text
         v-if="
-          (!item?.meta.icon &&
+          (!Boolean(item?.meta?.icon) &&
             isCollapse &&
             layout === 'vertical' &&
             item?.pathList?.length === 1) ||
-          (!onlyOneChild.meta.icon &&
+          (!Boolean(onlyOneChild.meta.icon) &&
             isCollapse &&
             layout === 'mix' &&
             item?.pathList?.length === 2)
@@ -174,15 +176,15 @@ function resolvePath(routePath) {
   >
     <template #title>
       <div
-        v-if="toRaw(item.meta.icon)"
+        v-if="toRaw(item?.meta?.icon)"
         :style="getSubMenuIconStyle"
         class="sub-menu-icon"
       >
-        <component :is="useRenderIcon(item.meta && toRaw(item.meta.icon))" />
+        <component :is="useRenderIcon(item?.meta?.icon)" />
       </div>
       <ReText
         v-if="
-          layout === 'mix' && toRaw(item.meta.icon)
+          layout === 'mix' && toRaw(item?.meta?.icon)
             ? !isCollapse || item?.pathList?.length !== 2
             : !(
                 layout === 'vertical' &&

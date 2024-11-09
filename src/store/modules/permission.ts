@@ -24,14 +24,16 @@ export const usePermissionStore = defineStore({
     // 缓存页面keepAlive
     cachePageList: []
   }),
+  getters: {},
   actions: {
     /** 组装整体路由生成的菜单 */
-    handleWholeMenus(routes: any[]) {
+    handleWholeMenus() {
       this.wholeMenus = filterNoPermissionTree(
-        filterTree(ascending(this.constantMenus.concat(routes)))
+        filterTree(ascending(this.constantMenus.concat([])))
       );
+
       this.flatteningRoutes = formatFlatteningRoutes(
-        this.constantMenus.concat(routes)
+        this.constantMenus.concat([])
       );
     },
     cacheOperate({ mode, name }: cacheType) {

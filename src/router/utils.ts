@@ -16,18 +16,14 @@ import {
   storageLocal,
   isIncludeAllChildren
 } from "@pureadmin/utils";
-import { getConfig } from "@/config";
 import { buildHierarchyTree } from "@/utils/tree";
 import { userKey, type DataInfo } from "@/utils/auth";
-import { type menuType, routerArrays } from "@/layout/types";
+import type { menuType } from "@/layout/types";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 const IFrame = () => import("@/layout/frame.vue");
 // https://cn.vitejs.dev/guide/features.html#glob-import
 const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
-
-// 动态路由
-import { getAsyncRoutes } from "@/api/routes";
 
 function handRank(routeInfo: any) {
   const { name, path, parentId, meta } = routeInfo;
@@ -39,7 +35,6 @@ function handRank(routeInfo: any) {
     : false;
 }
 
-/** 按照路由中meta下的rank等级升序来排序路由 */
 function ascending(arr: any[]) {
   arr.forEach((v, index) => {
     // 当rank不存在时，根据顺序自动创建，首页路由永远在第一位
@@ -52,7 +47,6 @@ function ascending(arr: any[]) {
   );
 }
 
-/** 过滤meta中showLink为false的菜单 */
 function filterTree(data: RouteComponent[]) {
   const newTree = cloneDeep(data).filter(
     (v: { meta: { showLink: boolean } }) => v.meta?.showLink !== false
@@ -63,7 +57,6 @@ function filterTree(data: RouteComponent[]) {
   return newTree;
 }
 
-/** 过滤children长度为0的的目录，当目录下没有菜单时，会过滤此目录，目录没有赋予roles权限，当目录下只要有一个菜单有显示权限，那么此目录就会显示 */
 function filterChildrenTree(data: RouteComponent[]) {
   const newTree = cloneDeep(data).filter((v: any) => v?.children?.length !== 0);
   newTree.forEach(
@@ -72,7 +65,6 @@ function filterChildrenTree(data: RouteComponent[]) {
   return newTree;
 }
 
-/** 判断两个数组彼此是否存在相同值 */
 function isOneOfArray(a: Array<string>, b: Array<string>) {
   return Array.isArray(a) && Array.isArray(b)
     ? intersection(a, b).length > 0
@@ -149,81 +141,6 @@ function addPathMatch() {
   }
 }
 
-/** 处理动态路由（后端返回的路由） */
-function handleAsyncRoutes(routeList) {
-  if (routeList.length === 0) {
-    usePermissionStoreHook().handleWholeMenus(routeList);
-  } else {
-    formatFlatteningRoutes(addAsyncRoutes(routeList)).map(
-      (v: RouteRecordRaw) => {
-        // 防止重复添加路由
-        if (
-          router.options.routes[0].children.findIndex(
-            value => value.path === v.path
-          ) !== -1
-        ) {
-          return;
-        } else {
-          // 切记将路由push到routes后还需要使用addRoute，这样路由才能正常跳转
-          router.options.routes[0].children.push(v);
-          // 最终路由进行升序
-          ascending(router.options.routes[0].children);
-          if (!router.hasRoute(v?.name)) router.addRoute(v);
-          const flattenRouters: any = router
-            .getRoutes()
-            .find(n => n.path === "/");
-          router.addRoute(flattenRouters);
-        }
-      }
-    );
-    usePermissionStoreHook().handleWholeMenus(routeList);
-  }
-  if (!useMultiTagsStoreHook().getMultiTagsCache) {
-    useMultiTagsStoreHook().handleTags("equal", [
-      ...routerArrays,
-      ...usePermissionStoreHook().flatteningRoutes.filter(
-        v => v?.meta?.fixedTag
-      )
-    ]);
-  }
-  addPathMatch();
-}
-
-/** 初始化路由（`new Promise` 写法防止在异步请求中造成无限循环）*/
-function initRouter() {
-  if (getConfig()?.CachingAsyncRoutes) {
-    // 开启动态路由缓存本地localStorage
-    const key = "async-routes";
-    const asyncRouteList = storageLocal().getItem(key) as any;
-    if (asyncRouteList && asyncRouteList?.length > 0) {
-      return new Promise(resolve => {
-        handleAsyncRoutes(asyncRouteList);
-        resolve(router);
-      });
-    } else {
-      return new Promise(resolve => {
-        getAsyncRoutes().then(({ data }) => {
-          handleAsyncRoutes(cloneDeep(data));
-          storageLocal().setItem(key, data);
-          resolve(router);
-        });
-      });
-    }
-  } else {
-    return new Promise(resolve => {
-      getAsyncRoutes().then(({ data }) => {
-        handleAsyncRoutes(cloneDeep(data));
-        resolve(router);
-      });
-    });
-  }
-}
-
-/**
- * 将多级嵌套路由处理成一维数组
- * @param routesList 传入路由
- * @returns 返回处理后的一维路由
- */
 function formatFlatteningRoutes(routesList: RouteRecordRaw[]) {
   if (routesList.length === 0) return routesList;
   let hierarchyList = buildHierarchyTree(routesList);
@@ -237,12 +154,6 @@ function formatFlatteningRoutes(routesList: RouteRecordRaw[]) {
   return hierarchyList;
 }
 
-/**
- * 一维数组处理成多级嵌套数组（三级及以上的路由全部拍成二级，keep-alive 只支持到二级缓存）
- * https://github.com/pure-admin/vue-pure-admin/issues/67
- * @param routesList 处理后的一维路由菜单数组
- * @returns 返回将一维数组重新处理成规定路由的格式
- */
 function formatTwoStageRoutes(routesList: RouteRecordRaw[]) {
   if (routesList.length === 0) return routesList;
   const newRoutesList: RouteRecordRaw[] = [];
@@ -381,9 +292,7 @@ function handleTopMenu(route) {
 
 /** 获取所有菜单中的第一个菜单（顶级菜单）*/
 function getTopMenu(tag = false): menuType {
-  const topMenu = handleTopMenu(
-    usePermissionStoreHook().wholeMenus[0]?.children[0]
-  );
+  const topMenu = handleTopMenu(usePermissionStoreHook().constantMenus[0]);
   tag && useMultiTagsStoreHook().handleTags("push", topMenu);
   return topMenu;
 }
@@ -393,7 +302,6 @@ export {
   getAuths,
   ascending,
   filterTree,
-  initRouter,
   getTopMenu,
   addPathMatch,
   isOneOfArray,
