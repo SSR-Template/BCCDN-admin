@@ -139,5 +139,12 @@ onBeforeUnmount(() => {
       border-radius: 10px;
     }
   }
+
+  .is-active,
+  .is-opened {
+    .el-sub-menu__title {
+      margin: 0 10px;
+    }
+  }
 }
 </style>

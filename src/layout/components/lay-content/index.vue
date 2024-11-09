@@ -136,7 +136,7 @@ const transitionMain = defineComponent({
               >
                 <BackTopIcon />
               </el-backtop>
-              <div class="grow">
+              <div class="grow p-6">
                 <transitionMain :route="route">
                   <keep-alive
                     v-if="isKeepAlive"
@@ -205,9 +205,5 @@ const transitionMain = defineComponent({
   display: flex;
   flex-direction: column;
   width: 100%;
-}
-
-.main-content {
-  margin: 24px;
 }
 </style>
