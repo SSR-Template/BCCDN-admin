@@ -1,6 +1,5 @@
 import { cdn } from "./cdn";
 import vue from "@vitejs/plugin-vue";
-import { pathResolve } from "./utils";
 import { viteBuildInfo } from "./info";
 import svgLoader from "vite-svg-loader";
 import type { PluginOption } from "vite";
