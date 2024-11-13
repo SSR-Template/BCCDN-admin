@@ -396,7 +396,12 @@ onMounted(async () => {
             <el-button
               size="small"
               type="primary"
-              @click="router.push(`/console/site/${row.id}`)"
+              @click="
+                router.push({
+                  path: '/console/site-edit',
+                  query: { id: row.id }
+                })
+              "
               >修改</el-button
             >
             <el-button size="small" type="danger" @click="handleDelete(row.id)"

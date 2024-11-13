@@ -16,6 +16,16 @@ export default {
       }
     },
     {
+      path: "/console/site-edit",
+      name: "ConsoleSiteEdit",
+      component: () => import("@/views/console/site-edit.vue"),
+      meta: {
+        title: "编辑网站",
+        showLink: false,
+        activePath: "/console/site"
+      }
+    },
+    {
       path: "/console/site-update",
       name: "ConsoleSiteUpdate",
       component: () => import("@/views/console/site-update.vue"),

@@ -20,6 +20,10 @@ export const deleteSite = id => {
   return http.request("delete", `/sites/${id}`);
 };
 
+export const getSiteDetail = id => {
+  return http.request("get", `/sites/${id}`);
+};
+
 export const certSite = data => {
   return http.request("post", "/certs", {}, { data });
 };
