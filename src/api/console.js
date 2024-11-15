@@ -39,3 +39,7 @@ export const getSiteGroupList = params => {
 export const getCertList = params => {
   return http.get("/certs", params);
 };
+
+export const getDNSAPIList = params => {
+  return http.get("/dnsapis", params);
+};
