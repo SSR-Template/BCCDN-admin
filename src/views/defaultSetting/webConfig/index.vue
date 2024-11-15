@@ -113,22 +113,17 @@ const handleSubmit = async () => {
       value = +formData.value.value;
       break;
   }
+  const data = {
+    ...formData.value,
+    type: "site",
+    scope_id:
+      formData.value.scope_name === "global" ? 0 : formData.value.scope_id,
+    value
+  };
   if (formData.value.id) {
-    await editDefaultSite({
-      ...formData,
-      type: "site",
-      scope_id:
-        formData.value.scope_name === "global" ? 0 : formData.value.scope_id,
-      value
-    });
+    await editDefaultSite(formData.value.id, data);
   } else {
-    await creteDefaultSite({
-      ...formData,
-      type: "site",
-      scope_id:
-        formData.value.scope_name === "global" ? 0 : formData.value.scope_id,
-      value
-    });
+    await creteDefaultSite(data);
   }
   ElMessage.success("操作成功");
   modal.value = false;

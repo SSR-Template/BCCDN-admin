@@ -1,7 +1,7 @@
 import { http } from "@/utils/http/index";
 
 export const getDefaultSiteList = params => {
-  return http.get("/user-configs", params);
+  return http.request("get", "/user-configs", {}, { params });
 };
 
 export const creteDefaultSite = data => {
