@@ -20,7 +20,8 @@ export default {
       name: "MyshareEdit",
       component: () => import("@/views/fourShare/myShare/edit.vue"),
       meta: {
-        title: "编辑转发"
+        title: "编辑转发",
+        showLink: false
       }
     },
     {

@@ -33,18 +33,18 @@ const getList = async () => {
   pagination.count = count;
 };
 
-const createModal = ref(false);
-const createRadio = ref("single");
-const createForm = reactive({});
-const handleCreateSubmit = async () => {
+const modal = ref(false);
+const createType = ref("single");
+const formData = ref({});
+const handleCreate = async () => {
   const tasks = [];
   if (createRadio.value === "batch") {
-    const backends = createForm.backend.split("\n");
+    const backends = formData.value.backend.split("\n");
     backends.forEach(item => {
       tasks.push(
         createFourShare({
-          user_package: createForm.user_package,
-          groups: createForm.groups.toString(),
+          user_package: formData.value.user_package,
+          groups: formData.value.groups.toString(),
           backend: [{ addr: item.split("|")[1] }],
           backend_port: item.split("|")[2],
           listen: [
@@ -59,23 +59,24 @@ const handleCreateSubmit = async () => {
   } else {
     tasks.push(
       createFourShare({
-        user_package: createForm.user_package,
-        groups: createForm.groups.toString(),
-        backend: [{ addr: createForm.backend.split(":")[0] }],
-        backend_port: createForm.backend.split(":")[1],
+        user_package: formData.value.user_package,
+        groups: formData.value.groups.toString(),
+        backend: [{ addr: formData.value.backend.split(":")[0] }],
+        backend_port: formData.value.backend.split(":")[1],
         listen: [
           {
-            port: createForm.listen.split("/")[0],
-            protocol: createForm.listen.split("/")[1] || "tcp"
+            port: formData.value.listen.split("/")[0],
+            protocol: formData.value.listen.split("/")[1] || "tcp"
           }
         ],
-        des: createForm.des
+        des: formData.value.des
       })
     );
   }
   await Promise.all(tasks);
   ElMessage.success("创建成功");
-  createModal.value = false;
+  formData.value = {};
+  modal.value = false;
   getList();
 };
 
@@ -207,7 +208,7 @@ onMounted(async () => {
     </div>
     <div class="flex items-center justify-between">
       <div class="flex items-center">
-        <el-button size="small" type="success" @click="createModal = true"
+        <el-button size="small" type="success" @click="modal = true"
           >新增</el-button
         >
         <el-button
@@ -303,20 +304,20 @@ onMounted(async () => {
       @change="getList"
     />
 
-    <el-dialog v-model="createModal" title="新增转发" append-to-body>
+    <el-dialog v-model="modal" title="新增转发" append-to-body>
       <div class="space-y-4">
         <div
           class="pl-3 border-l-4 border-[var(--el-color-primary)] text-sm font-bold"
         >
           数量
         </div>
-        <el-radio-group v-model="createRadio">
+        <el-radio-group v-model="createType">
           <el-radio value="single">单个</el-radio>
           <el-radio value="batch">批量</el-radio>
         </el-radio-group>
-        <el-form :model="createForm" label-width="100" label-position="left">
+        <el-form :model="formData" label-width="100" label-position="left">
           <el-form-item label="套餐" prop="user_package">
-            <el-select v-model="createForm.user_package">
+            <el-select v-model="formData.user_package">
               <el-option
                 v-for="item of packageList"
                 :key="item.id"
@@ -326,7 +327,7 @@ onMounted(async () => {
             </el-select>
           </el-form-item>
           <el-form-item label="所属分组">
-            <el-select v-model="createForm.groups" multiple>
+            <el-select v-model="formData.groups" multiple>
               <el-option
                 v-for="item of fourShareGroupList"
                 :key="item.id"
@@ -335,7 +336,7 @@ onMounted(async () => {
               />
             </el-select>
           </el-form-item>
-          <template v-if="createRadio === 'single'">
+          <template v-if="formData === 'single'">
             <el-form-item label="监听端口" prop="listen">
               <el-input v-model="createForm.listen" placeholder="88 99/udp" />
             </el-form-item>
@@ -352,7 +353,7 @@ onMounted(async () => {
           <template v-else>
             <el-form-item label="数据" prop="backend">
               <el-input
-                v-model="createForm.backend"
+                v-model="formData.backend"
                 type="textarea"
                 :rows="5"
                 placeholder="格式为：监听端口|IP|回源端口
@@ -364,7 +365,7 @@ onMounted(async () => {
         </el-form>
       </div>
       <template #footer>
-        <el-button type="primary" @click="handleCreateSubmit">确定</el-button>
+        <el-button type="primary" @click="handleCreate">确定</el-button>
       </template>
     </el-dialog>
   </div>

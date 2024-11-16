@@ -1,174 +1,157 @@
-<script lang="ts" setup>
-import { ref } from "vue";
-import { useTable, PlusTable, PlusSearch } from "plus-pro-components";
-import "plus-pro-components/es/components/table/style/css";
-import "plus-pro-components/es/components/search/style/css";
-import { type PlusColumn, type FieldValues } from "plus-pro-components";
-import { Download, Printer, Setting } from "@element-plus/icons-vue";
+<script setup>
+import { ElMessage } from "element-plus";
+import { onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import {
+  getFourShareGroup,
+  createFourShareGroup,
+  editFourShareGroup,
+  deleteFourShareGroup
+} from "@/api/fourShare";
+import { getMyPackageList } from "@/api/package";
 
-interface TableRow {
-  id: number;
-  name: string;
-  status: string;
-  tag: string;
-  time: Date;
-}
-
-const state = ref<FieldValues>({
-  status: "1",
-  name: ""
+const router = useRouter();
+const isLoading = ref(false);
+const pagination = reactive({
+  page: 1,
+  limit: 10,
+  count: 0
 });
-
-const searchRef = ref();
-
-const TestServe = {
-  getList: async () => {
-    const data = Array.from({ length: 3 }).map((item, index) => {
-      return {
-        id: index,
-        name: index + "name",
-        status: String(index % 3),
-        tag:
-          index === 1
-            ? "success"
-            : index === 2
-              ? "warning"
-              : index === 3
-                ? "info"
-                : "danger",
-        time: new Date()
-      };
-    });
-    return {
-      data: data as TableRow[]
-    };
-  }
+const tableData = ref([]);
+const getList = async () => {
+  const { count, data } = await getFourShareGroup({
+    ...pagination
+  });
+  tableData.value = data;
+  pagination.count = count;
 };
 
-const { tableData } = useTable<TableRow[]>();
-
-const tableConfig: PlusColumn[] = [
-  {
-    label: "名称",
-    prop: "name"
-  },
-  {
-    label: "状态",
-    prop: "status",
-    valueType: "select",
-    options: [
-      {
-        label: "未解决",
-        value: "0"
-      },
-      {
-        label: "已解决",
-        value: "1"
-      },
-      {
-        label: "解决中",
-        value: "2"
-      },
-      {
-        label: "失败",
-        value: "3"
-      }
-    ]
-  },
-  {
-    label: "标签",
-    prop: "tag",
-    valueType: "tag",
-    fieldProps: (value: string) => {
-      return { type: value };
-    }
-  },
-  {
-    label: "时间",
-    prop: "time",
-    valueType: "date-picker"
+const modal = ref(false);
+const formData = ref({});
+const handleCreate = async () => {
+  if (formData.value.id) {
+    await editFourShareGroup(formData.value.id, formData.value);
+  } else {
+    await createFourShareGroup(formData.value);
   }
-];
+  ElMessage.success("操作成功");
+  modal.value = false;
+  getList();
+};
 
-const columns: PlusColumn[] = [
-  {
-    label: "名称",
-    width: 120,
-    prop: "name",
-    valueType: "copy",
-    tooltip: "我是名称"
-  },
-  {
-    label: "状态",
-    width: 120,
-    prop: "status",
-    valueType: "select",
-    options: [
-      {
-        label: "未解决",
-        value: "0",
-        color: "red"
-      },
-      {
-        label: "已解决",
-        value: "1",
-        color: "blue"
-      },
-      {
-        label: "解决中",
-        value: "2",
-        color: "yellow"
-      },
-      {
-        label: "失败",
-        value: "3",
-        color: "red"
-      }
-    ]
+const selection = ref([]);
+const handleBatchOption = async type => {
+  if (!selection.value.length) {
+    ElMessage.error("没有可选项");
+    return;
   }
-];
 
-const getList = async (values?: FieldValues) => {
+  if (type === "delete") {
+    await Promise.all(selection.value.map(i => deleteFourShareGroup(i.id)));
+  }
+
+  ElMessage.success("操作成功");
+  getList();
+};
+
+const handleDelete = async id => {
+  await deleteFourShareGroup(id);
+  ElMessage.success("删除成功");
+  getList();
+};
+
+onMounted(async () => {
+  isLoading.value = true;
   try {
-    const { data } = await TestServe.getList();
-    tableData.value = data;
-  } catch (error) {}
-};
-getList();
-
-const handlePrint = () => {
-  window.print();
-};
-
-const handleReset = () => {
-  state.value = {};
-};
+    await getList();
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <template>
-  <el-card shadow="always">
-    <PlusTable
-      default-size="large"
-      :columns="tableConfig"
-      :table-data="tableData"
-      :drag-sortable="false"
-      :title-bar="{ title: '表格标题', columnSetting: { dragSort: false } }"
-      :has-toolbar="true"
+  <div class="h-full bg-white rounded-xl p-4 flex flex-col gap-y-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <el-button size="small" type="success" @click="modal = true"
+          >新增
+        </el-button>
+        <el-button
+          size="small"
+          type="danger"
+          @click="handleBatchOption('delete')"
+          >删除
+        </el-button>
+      </div>
+    </div>
+    <el-table
+      v-loading="isLoading"
+      size="small"
+      :data="tableData"
+      style="width: 100%; height: 0; flex: 1"
+      @selection-change="selection = $event"
     >
-      <template #density-icon> <div /> </template>
+      <el-table-column type="selection" width="55" />
+      <el-table-column prop="id" label="ID" show-overflow-tooltip />
+      <el-table-column prop="name" label="名称" show-overflow-tooltip />
+      <el-table-column label="操作" width="200" fixed="right">
+        <template #default="{ row }">
+          <div class="flex items-center">
+            <el-button
+              size="small"
+              type="primary"
+              @click="
+                () => {
+                  formData = { ...row };
+                  modal = true;
+                }
+              "
+              >修改
+            </el-button>
+            <el-button size="small" type="danger" @click="handleDelete(row.id)"
+              >删除
+            </el-button>
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+      v-model:current-page="pagination.page"
+      v-model:page-size="pagination.limit"
+      size="small"
+      background
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="pagination.count"
+      @change="getList"
+    />
 
-      <template #toolbar>
-        <el-button type="primary" circle :icon="Download" />
-        <el-button type="primary" circle :icon="Printer" @click="handlePrint" />
+    <el-dialog
+      v-model="modal"
+      :title="formData.id ? '编辑分组' : '新增分组'"
+      append-to-body
+      @close="formData = {}"
+    >
+      <el-form :model="formData" label-width="100" label-position="left">
+        <el-form-item label="名称">
+          <el-input
+            v-model="formData.name"
+            placeholder="请输入名称"
+            style="width: 220px"
+          />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input
+            v-model="formData.des"
+            :rows="5"
+            placeholder="请输入备注"
+            style="width: 220px"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button type="primary" @click="handleCreate">确定</el-button>
       </template>
-      <template #column-settings-icon>
-        <el-button class="ml-3" type="primary" circle :icon="Setting" />
-      </template>
-
-      <template #title>
-        <el-button type="primary">新增</el-button>
-        <el-button type="danger">删除</el-button>
-      </template>
-    </PlusTable>
-  </el-card>
+    </el-dialog>
+  </div>
 </template>

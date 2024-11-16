@@ -25,5 +25,17 @@ export const getFourShareDetail = id => {
 };
 
 export const getFourShareGroup = params => {
-  return http.request("get", "stream-groups", {}, { params });
+  return http.request("get", "/stream-groups", {}, { params });
+};
+
+export const createFourShareGroup = data => {
+  return http.request("post", "/stream-groups", {}, { data });
+};
+
+export const editFourShareGroup = (id, data) => {
+  return http.request("put", `/stream-groups/${id}`, {}, { data });
+};
+
+export const deleteFourShareGroup = id => {
+  return http.request("delete", `/stream-groups/${id}`);
 };
