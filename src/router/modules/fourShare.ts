@@ -16,6 +16,14 @@ export default {
       }
     },
     {
+      path: "fourShare/myshare-edit",
+      name: "MyshareEdit",
+      component: () => import("@/views/fourShare/myShare/edit.vue"),
+      meta: {
+        title: "编辑转发"
+      }
+    },
+    {
       path: "/fourShare/shareGroup",
       name: "ShareGroup",
       component: () => import("@/views/fourShare/shareGroup/index.vue"),
