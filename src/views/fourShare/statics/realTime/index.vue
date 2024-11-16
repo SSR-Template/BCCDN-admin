@@ -1,116 +1,159 @@
-<script setup lang="ts">
-import { computed, ref } from "vue";
-import { useDark, useECharts } from "@pureadmin/utils";
+<script setup>
+import dayjs from "dayjs";
+import { computed, onMounted, reactive, ref } from "vue";
+import { getFourShareList, getStreamStatistics } from "@/api/fourShare";
+import useEcharts from "@/hooks/useEcharts";
 
+const fourShareList = ref([]);
+const currentTab = ref("stream-bandwidth");
 const dateType = ref("1");
-const customerDate = ref([]);
-const isCustomer = computed(() => dateType.value === "customer");
+const searchFormData = reactive({
+  start: dayjs().subtract(1, "hour").format("YYYY-MM-DD HH:mm:ss"),
+  end: dayjs().format("YYYY-MM-DD HH:mm:ss")
+});
+const customDate = computed({
+  get() {
+    return [searchFormData.start, searchFormData.end];
+  },
+  set(val) {
+    searchFormData.start = dayjs(val[0]).format("YYYY-MM-DD HH:mm:ss");
+    searchFormData.end = dayjs(val[1]).format("YYYY-MM-DD HH:mm:ss");
+  }
+});
 
-const bandwidthRef = ref();
-const trafficRef = ref();
-const { setOptions: setBandwidthOptions } = useECharts(bandwidthRef);
-const { setOptions: setTrafficOptions } = useECharts(trafficRef);
-
-setBandwidthOptions({
+const bandwidthRef = ref(null);
+const trafficRef = ref(null);
+const bandwidthOption = ref({
   title: {
     text: "带宽"
   },
-  tooltip: {
-    trigger: "axis",
-    axisPointer: {
-      type: "shadow"
-    }
-  },
+  tooltip: {},
   xAxis: {
     type: "category",
-    data: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+    data: []
   },
   yAxis: {
+    name: "单位：Kbps",
     type: "value"
   },
   series: [
     {
-      data: [120, 200, 150, 80, 70, 110, 130],
-      type: "line",
-      symbol: "triangle",
-      symbolSize: 20,
-      lineStyle: {
-        color: "#5470C6",
-        width: 4,
-        type: "dashed"
-      },
-      itemStyle: {
-        borderWidth: 3,
-        borderColor: "#EE6666",
-        color: "yellow"
-      }
+      data: [],
+      type: "line"
     }
   ]
 });
-
-setTrafficOptions({
+const trafficOption = ref({
   title: {
     text: "流量"
   },
-  tooltip: {
-    trigger: "axis",
-    axisPointer: {
-      type: "shadow"
-    }
-  },
+  tooltip: {},
   xAxis: {
     type: "category",
-    data: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+    data: []
   },
   yAxis: {
+    name: "单位：KB",
     type: "value"
   },
   series: [
     {
-      data: [120, 200, 150, 80, 70, 110, 130],
-      type: "line",
-      symbol: "triangle",
-      symbolSize: 20,
-      lineStyle: {
-        color: "#5470C6",
-        width: 4,
-        type: "dashed"
-      },
-      itemStyle: {
-        borderWidth: 3,
-        borderColor: "#EE6666",
-        color: "yellow"
-      }
+      data: [],
+      type: "line"
     }
   ]
+});
+useEcharts(bandwidthRef, bandwidthOption);
+useEcharts(trafficRef, trafficOption);
+
+const getData = async () => {
+  const bandwidth = await getStreamStatistics({
+    ...searchFormData,
+    type: "stream-bandwidth"
+  });
+  const traffic = await getStreamStatistics({
+    ...searchFormData,
+    type: "stream-traffic"
+  });
+  bandwidthOption.value.xAxis.data = bandwidth.data.map(i =>
+    dayjs(i[0]).format("YYYY-MM-DD HH:mm:ss")
+  );
+  bandwidthOption.value.series[0].data = bandwidth.data.map(i => i[1]);
+  trafficOption.value.xAxis.data = traffic.data.map(i =>
+    dayjs(i[0]).format("YYYY-MM-DD HH:mm:ss")
+  );
+  trafficOption.value.series[0].data = traffic.data.map(i => i[1]);
+};
+
+const handleDateChange = val => {
+  if (val === "custom") return;
+
+  searchFormData.start = dayjs()
+    .subtract(+val, "hour")
+    .format("YYYY-MM-DD HH:mm:ss");
+};
+
+onMounted(async () => {
+  const { data } = await getFourShareList({ limit: 0 });
+  fourShareList.value = data.map(i =>
+    JSON.parse(i.listen)
+      .map(j => `${j.port}/${j.protocol}`)
+      .join(" ")
+  );
+  getData();
 });
 </script>
 
 <template>
-  <el-card shadow="always">
-    <template #header>带宽流量</template>
-    <el-space :size="0">
-      <el-radio-group v-model="dateType" size="large">
-        <el-radio-button label="1小时实况" value="1" />
-        <el-radio-button label="近6小时" value="6" />
-        <el-radio-button label="近12小时" value="12" />
-        <el-radio-button v-if="!isCustomer" label="自定义" value="customer" />
-      </el-radio-group>
-      <el-date-picker
-        v-if="isCustomer"
-        v-model="customerDate"
-        size="large"
-        class="h-full"
-        type="datetimerange"
-        range-separator="至"
-        start-placeholder="开始日期"
-        end-placeholder="结束日期"
-      />
-    </el-space>
-    <br />
-    <el-space class="w-full mt-6" wrap>
-      <div ref="bandwidthRef" class="w-[550px] h-[330px]" />
-      <div ref="trafficRef" class="w-[550px] h-[330px]" />
-    </el-space>
-  </el-card>
+  <div class="bg-white p-4 rounded-xl space-y-4">
+    <div class="rounded-xl p-2 bg-slate-100">
+      <div
+        :class="[
+          'font-bold w-[120px] text-center py-2 rounded-xl text-sm',
+          currentTab === 'stream-bandwidth'
+            ? 'text-[#5570E2] bg-white'
+            : 'text-slate-500'
+        ]"
+      >
+        流量带宽
+      </div>
+    </div>
+    <div v-if="currentTab === 'stream-bandwidth'" class="space-y-4">
+      <div class="flex items-center gap-x-4">
+        <el-select
+          v-model="searchFormData.port"
+          multiple
+          placeholder="选择端口"
+          style="width: 220px"
+        >
+          <el-option
+            v-for="item of fourShareList"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
+        </el-select>
+        <el-radio-group v-model="dateType" @change="handleDateChange">
+          <el-radio-button value="1">1小时实时</el-radio-button>
+          <el-radio-button value="6">近6小时</el-radio-button>
+          <el-radio-button value="12">近12小时</el-radio-button>
+          <el-radio-button value="custom">自定义</el-radio-button>
+        </el-radio-group>
+        <el-date-picker
+          v-if="dateType === 'custom'"
+          v-model="customDate"
+          type="datetimerange"
+          range-separator="至"
+          start-placeholder="起始时间"
+          end-placeholder="结束时间"
+          style="width: 500px; flex-grow: 0"
+        />
+        <el-button type="primary" @click="getData">搜索</el-button>
+      </div>
+      <div class="h-[600px] flex">
+        <div ref="bandwidthRef" class="w-0 flex-1 h-full" />
+        <div ref="trafficRef" class="w-0 flex-1 h-full" />
+      </div>
+    </div>
+  </div>
 </template>

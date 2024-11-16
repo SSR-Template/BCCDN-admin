@@ -39,3 +39,7 @@ export const editFourShareGroup = (id, data) => {
 export const deleteFourShareGroup = id => {
   return http.request("delete", `/stream-groups/${id}`);
 };
+
+export const getStreamStatistics = params => {
+  return http.request("get", "/monitor/stream/realtime", {}, { params });
+};
