@@ -58,6 +58,14 @@ export default {
           meta: {
             title: "资源排行"
           }
+        },
+        {
+          path: "/console/statistics/top-cc",
+          name: "ConsoleStatisticsTopCC",
+          component: () => import("@/views/console/statistics/top-cc.vue"),
+          meta: {
+            title: "攻击分析"
+          }
         }
       ]
     },
