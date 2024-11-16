@@ -3,11 +3,12 @@ import dayjs from "dayjs";
 import { computed, onMounted, reactive, ref } from "vue";
 import { getFourShareList, getStreamStatistics } from "@/api/fourShare";
 import useEcharts from "@/hooks/useEcharts";
+import Tabs from "@/components/Tabs/index.vue";
 
 const fourShareList = ref([]);
-const currentTab = ref("stream-bandwidth");
 const dateType = ref("1");
 const searchFormData = reactive({
+  type: "stream-bandwidth",
   start: dayjs().subtract(1, "hour").format("YYYY-MM-DD HH:mm:ss"),
   end: dayjs().format("YYYY-MM-DD HH:mm:ss")
 });
@@ -67,10 +68,7 @@ useEcharts(bandwidthRef, bandwidthOption);
 useEcharts(trafficRef, trafficOption);
 
 const getData = async () => {
-  const bandwidth = await getStreamStatistics({
-    ...searchFormData,
-    type: "stream-bandwidth"
-  });
+  const bandwidth = await getStreamStatistics(searchFormData);
   const traffic = await getStreamStatistics({
     ...searchFormData,
     type: "stream-traffic"
@@ -106,19 +104,11 @@ onMounted(async () => {
 
 <template>
   <div class="bg-white p-4 rounded-xl flex flex-col gap-y-4 h-full">
-    <div class="rounded-xl p-2 bg-slate-100">
-      <div
-        :class="[
-          'font-bold w-[120px] text-center py-2 rounded-xl text-sm',
-          currentTab === 'stream-bandwidth'
-            ? 'text-[#5570E2] bg-white'
-            : 'text-slate-500'
-        ]"
-      >
-        流量带宽
-      </div>
-    </div>
-    <template v-if="currentTab === 'stream-bandwidth'">
+    <Tabs
+      v-model="searchFormData.type"
+      :tabs="[{ label: '带宽流量', value: 'stream-bandwidth' }]"
+    />
+    <template v-if="searchFormData.type === 'stream-bandwidth'">
       <div class="flex items-center gap-x-4">
         <el-select
           v-model="searchFormData.port"

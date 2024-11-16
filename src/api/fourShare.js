@@ -47,3 +47,7 @@ export const getStreamStatistics = params => {
 export const getStreamPortStatistics = params => {
   return http.request("get", "/monitor/stream/top", {}, { params });
 };
+
+export const getStreamUsageStatistics = params => {
+  return http.request("get", "/monitor/usage", {}, { params });
+};
