@@ -36,6 +36,18 @@ export const getSiteGroupList = params => {
   return http.get("/site-groups", params);
 };
 
+export const createSiteGroup = data => {
+  return http.request("post", "/site-groups", {}, { data });
+};
+
+export const editSiteGroup = (id, data) => {
+  return http.request("put", `/site-groups/${id}`, {}, { data });
+};
+
+export const deleteSiteGroup = id => {
+  return http.request("delete", `/site-groups/${id}`);
+};
+
 export const getCertList = params => {
   return http.get("/certs", params);
 };

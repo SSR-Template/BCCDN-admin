@@ -36,6 +36,14 @@ export default {
       }
     },
     {
+      path: "/console/group",
+      name: "ConsoleGroup",
+      component: () => import("@/views/console/group.vue"),
+      meta: {
+        title: "分组管理"
+      }
+    },
+    {
       path: "/console/statistics",
       name: "ConsoleStatistics",
       redirect: "/console/statistics/realtime",
