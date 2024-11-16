@@ -43,3 +43,11 @@ export const getCertList = params => {
 export const getDNSAPIList = params => {
   return http.get("/dnsapis", params);
 };
+
+export const getDomainList = params => {
+  return http.request("get", "/domains", {}, { params });
+};
+
+export const optionDomain = data => {
+  return http.request("post", "/domains", {}, { data });
+};

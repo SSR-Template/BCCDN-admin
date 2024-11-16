@@ -34,6 +34,24 @@ export default {
         showLink: false,
         activePath: "/console/site"
       }
+    },
+    {
+      path: "/console/more",
+      name: "ConsoleMore",
+      redirect: "/console/more/domain",
+      meta: {
+        title: "查看更多"
+      },
+      children: [
+        {
+          path: "/console/more/domain",
+          name: "ConsoleMoreDomain",
+          component: () => import("@/views/console/more/domain.vue"),
+          meta: {
+            title: "我的域名"
+          }
+        }
+      ]
     }
   ]
 } satisfies RouteConfigsTable;
