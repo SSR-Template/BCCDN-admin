@@ -2,7 +2,6 @@
 import dayjs from "dayjs";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { getSiteRealtimeStatics } from "@/api/console";
-import { getStreamUsageStatistics } from "@/api/fourShare";
 import useEcharts from "@/hooks/useEcharts";
 import Tabs from "@/components/Tabs/index.vue";
 

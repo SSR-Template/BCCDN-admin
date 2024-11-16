@@ -50,6 +50,14 @@ export default {
           meta: {
             title: "实时指标"
           }
+        },
+        {
+          path: "/console/statistics/top",
+          name: "ConsoleStatisticsTop",
+          component: () => import("@/views/console/statistics/top.vue"),
+          meta: {
+            title: "资源排行"
+          }
         }
       ]
     },

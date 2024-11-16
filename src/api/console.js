@@ -44,6 +44,10 @@ export const getSiteRealtimeStatics = params => {
   return http.request("get", "/monitor/site/realtime", {}, { params });
 };
 
+export const getSiteTopStatics = params => {
+  return http.request("get", "/monitor/site/top", {}, { params });
+};
+
 export const getDomainList = params => {
   return http.request("get", "/domains", {}, { params });
 };
