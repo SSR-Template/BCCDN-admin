@@ -50,6 +50,14 @@ export default {
           meta: {
             title: "我的域名"
           }
+        },
+        {
+          path: "/console/more/dnsapi",
+          name: "ConsoleMoreDnsApi",
+          component: () => import("@/views/console/more/dnsapi.vue"),
+          meta: {
+            title: "DNS API"
+          }
         }
       ]
     }

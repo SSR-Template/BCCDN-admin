@@ -1,3 +1,58 @@
+export const dnsApiList = [
+  {
+    label: "CloudFlare",
+    value: "CloudFlare"
+  },
+  {
+    label: "DNSPod.cn",
+    value: "DNSPod.cn"
+  },
+  {
+    label: "DNSPod.com",
+    value: "DNSPod.com"
+  },
+  {
+    label: "DNS.LA",
+    value: "DNS.LA"
+  },
+  {
+    label: "GoDaddy.com",
+    value: "GoDaddy.com"
+  },
+  {
+    label: "Aliyun",
+    value: "Aliyun"
+  },
+  {
+    label: "cloudns.net",
+    value: "cloudns.net"
+  },
+  {
+    label: "Name.com",
+    value: "Name.com"
+  },
+  {
+    label: "Namecheap",
+    value: "Namecheap"
+  },
+  {
+    label: "jdcloud.com",
+    value: "jdcloud.com"
+  },
+  {
+    label: "Namesilo.com",
+    value: "Namesilo.com"
+  },
+  {
+    label: "DNS.COM",
+    value: "DNS.COM"
+  },
+  {
+    label: "dnsdun",
+    value: "dnsdun"
+  }
+];
+
 export const regionList = [
   {
     label: "不设置",
