@@ -28,7 +28,9 @@ const bandwidthOption = ref({
   title: {
     text: "带宽"
   },
-  tooltip: {},
+  tooltip: {
+    trigger: "axis"
+  },
   xAxis: {
     type: "category",
     data: []
@@ -48,7 +50,9 @@ const trafficOption = ref({
   title: {
     text: "流量"
   },
-  tooltip: {},
+  tooltip: {
+    trigger: "axis"
+  },
   xAxis: {
     type: "category",
     data: []

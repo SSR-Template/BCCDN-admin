@@ -36,6 +36,24 @@ export default {
       }
     },
     {
+      path: "/console/statistics",
+      name: "ConsoleStatistics",
+      redirect: "/console/statistics/realtime",
+      meta: {
+        title: "监控统计"
+      },
+      children: [
+        {
+          path: "/console/statistics/realtime",
+          name: "ConsoleStatisticsRealtime",
+          component: () => import("@/views/console/statistics/realtime.vue"),
+          meta: {
+            title: "实时指标"
+          }
+        }
+      ]
+    },
+    {
       path: "/console/more",
       name: "ConsoleMore",
       redirect: "/console/more/domain",

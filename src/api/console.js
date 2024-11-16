@@ -40,6 +40,10 @@ export const getCertList = params => {
   return http.get("/certs", params);
 };
 
+export const getSiteRealtimeStatics = params => {
+  return http.request("get", "/monitor/site/realtime", {}, { params });
+};
+
 export const getDomainList = params => {
   return http.request("get", "/domains", {}, { params });
 };
