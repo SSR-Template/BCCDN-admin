@@ -43,3 +43,7 @@ export const deleteFourShareGroup = id => {
 export const getStreamStatistics = params => {
   return http.request("get", "/monitor/stream/realtime", {}, { params });
 };
+
+export const getStreamPortStatistics = params => {
+  return http.request("get", "/monitor/stream/top", {}, { params });
+};

@@ -105,7 +105,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-white p-4 rounded-xl space-y-4">
+  <div class="bg-white p-4 rounded-xl flex flex-col gap-y-4 h-full">
     <div class="rounded-xl p-2 bg-slate-100">
       <div
         :class="[
@@ -118,7 +118,7 @@ onMounted(async () => {
         流量带宽
       </div>
     </div>
-    <div v-if="currentTab === 'stream-bandwidth'" class="space-y-4">
+    <template v-if="currentTab === 'stream-bandwidth'">
       <div class="flex items-center gap-x-4">
         <el-select
           v-model="searchFormData.port"
@@ -150,10 +150,10 @@ onMounted(async () => {
         />
         <el-button type="primary" @click="getData">搜索</el-button>
       </div>
-      <div class="h-[600px] flex">
+      <div class="h-0 flex-1 flex">
         <div ref="bandwidthRef" class="w-0 flex-1 h-full" />
         <div ref="trafficRef" class="w-0 flex-1 h-full" />
       </div>
-    </div>
+    </template>
   </div>
 </template>
