@@ -44,6 +44,14 @@ export default {
       }
     },
     {
+      path: "/console/refresh",
+      name: "ConsoleRefresh",
+      component: () => import("@/views/console/refresh.vue"),
+      meta: {
+        title: "预热刷新"
+      }
+    },
+    {
       path: "/console/statistics",
       name: "ConsoleStatistics",
       redirect: "/console/statistics/realtime",

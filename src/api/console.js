@@ -52,6 +52,14 @@ export const getCertList = params => {
   return http.get("/certs", params);
 };
 
+export const getJobList = params => {
+  return http.request("get", "/jobs", {}, { params });
+};
+
+export const createJob = data => {
+  return http.request("post", "/jobs", {}, { data });
+};
+
 export const getSiteRealtimeStatics = params => {
   return http.request("get", "/monitor/site/realtime", {}, { params });
 };
