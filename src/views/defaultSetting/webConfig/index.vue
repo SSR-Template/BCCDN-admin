@@ -229,14 +229,32 @@ onMounted(async () => {
     >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="id" label="ID" show-overflow-tooltip />
-      <el-table-column label="套餐" show-overflow-tooltip>
+      <el-table-column label="设置项" show-overflow-tooltip>
         <template #default="{ row }">
           {{ configList.find(i => i.value === row.name)?.label }}
         </template>
       </el-table-column>
       <el-table-column label="设置值" show-overflow-tooltip>
         <template #default="{ row }">
-          {{ row.name === "proxy_cache" ? "点击右侧按钮查看" : row.value }}
+          {{
+            [
+              "https_listen-ocsp_stapling",
+              "ups_keepalive",
+              "gzip_enable",
+              "websocket_enable",
+              "block_proxy",
+              "send_real_time",
+              "recv_real_time",
+              "https_listen-hsts",
+              "https_listen-http2",
+              "https_listen-http3",
+              "https_listen-force_ssl_enable"
+            ].includes(row.name)
+              ? row.value === "1"
+                ? "启用"
+                : "未启用"
+              : row.value
+          }}
         </template>
       </el-table-column>
       <el-table-column label="生效范围" show-overflow-tooltip>
