@@ -77,3 +77,34 @@ export const regionList = [
     value: "cn"
   }
 ];
+
+export const messageList = [
+  {
+    label: "带宽超限",
+    value: "bandwidth-exceed"
+  },
+  {
+    label: "连接数超限",
+    value: "coesnnection-exceed"
+  },
+  {
+    label: "规则自动切换",
+    value: "cc-switch"
+  },
+  {
+    label: "套餐已过期",
+    value: "package-expire"
+  },
+  {
+    label: "套餐即将过期",
+    value: "package-expiring"
+  },
+  {
+    label: "证书已过期",
+    value: "cert-expire"
+  },
+  {
+    label: "证书即将过期",
+    value: "cert-expiring"
+  }
+];

@@ -15,7 +15,8 @@ import { getToken, formatToken } from "@/utils/auth";
 import { ElMessage } from "element-plus";
 
 const defaultConfig: AxiosRequestConfig = {
-  baseURL: "https://cdn.bccdn.com",
+  // baseURL: "https://cdn.bccdn.com",
+  baseURL: "/api",
   timeout: 10000,
   headers: {
     Accept: "application/json, text/plain, */*",

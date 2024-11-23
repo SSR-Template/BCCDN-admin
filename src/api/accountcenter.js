@@ -8,6 +8,10 @@ export const getSubscribeMessage = params => {
   return http.get("/messages", params);
 };
 
+export const getSubscribeMessageDetail = id => {
+  return http.request("get", `/messages/${id}`);
+};
+
 export const getMyOrderList = params => {
   return http.get("/orders", params);
 };
