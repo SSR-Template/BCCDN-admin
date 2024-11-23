@@ -108,6 +108,14 @@ export default {
           meta: {
             title: "DNS API"
           }
+        },
+        {
+          path: "/console/more/acl",
+          name: "ConsoleMoreACL",
+          component: () => import("@/views/console/more/acl.vue"),
+          meta: {
+            title: "ACL管理"
+          }
         }
       ]
     }

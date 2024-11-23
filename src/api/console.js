@@ -91,3 +91,23 @@ export const editDNSAPI = (id, data) => {
 export const deleteDNSAPI = id => {
   return http.request("delete", `/dnsapis/${id}`);
 };
+
+export const getACLList = params => {
+  return http.request("get", "/acls", {}, { params });
+};
+
+export const createACL = data => {
+  return http.request("post", "/acls", {}, { data });
+};
+
+export const optionACL = data => {
+  return http.request("put", "/acls", {}, { data });
+};
+
+export const editACL = (id, data) => {
+  return http.request("put", `/acls/${id}`, {}, { data });
+};
+
+export const deleteACL = id => {
+  return http.request("delete", `/acls/${id}`);
+};

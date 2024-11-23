@@ -53,6 +53,92 @@ export const dnsApiList = [
   }
 ];
 
+export const aclMatchList = [
+  {
+    label: "域名",
+    value: "host"
+  },
+  {
+    label: "IP地址",
+    value: "ip"
+  },
+  {
+    label: "请求URI",
+    value: "req_uri"
+  },
+  {
+    label: "请求URI(不带参数)",
+    value: "uri"
+  },
+  {
+    label: "请求方法",
+    value: "req_method"
+  },
+  {
+    label: "浏览器UA",
+    value: "user_agent"
+  },
+  {
+    label: "请求来源",
+    value: "referer"
+  },
+  {
+    label: "国家代码",
+    value: "country_iso_code"
+  },
+  {
+    label: "accept_language请求头",
+    value: "accept_language"
+  },
+  {
+    label: "AS号码",
+    value: "asnumber"
+  },
+  {
+    label: "省份(中文)",
+    value: "province"
+  },
+  {
+    label: "城市(中文)",
+    value: "city"
+  },
+  {
+    label: "运营商(中文)",
+    value: "isp"
+  }
+];
+
+export const aclMatchOperatorList = [
+  {
+    label: "等于",
+    value: "="
+  },
+  {
+    label: "不等于",
+    value: "!="
+  },
+  {
+    label: "包含",
+    value: "contain"
+  },
+  {
+    label: "不包含",
+    value: "!contain"
+  },
+  {
+    label: "前缀匹配",
+    value: "prefix"
+  },
+  {
+    label: "后缀匹配",
+    value: "suffix"
+  },
+  {
+    label: "正则匹配",
+    value: "regex"
+  }
+];
+
 export const regionList = [
   {
     label: "不设置",
