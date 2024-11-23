@@ -73,6 +73,7 @@ const tableConfig: PlusColumn[] = [
   {
     label: "带宽",
     prop: "bandwidth",
+    width: 120,
     formatter: value => {
       return value === -1 ? "不限制" : value;
     }
@@ -80,6 +81,7 @@ const tableConfig: PlusColumn[] = [
   {
     label: "连接数",
     prop: "connection",
+    width: 120,
     formatter: value => {
       return value === -1 ? "不限制" : value;
     }
@@ -87,7 +89,7 @@ const tableConfig: PlusColumn[] = [
   {
     label: "域名数 / 主域名数",
     prop: "domain",
-    width: 220,
+    width: 180,
     render: (value, { row }) => {
       return `${row.domain} / ${row.main_domain === -1 ? "不限制" : row.main_domain}`;
     }
@@ -95,17 +97,17 @@ const tableConfig: PlusColumn[] = [
   {
     label: "HTTP端口数",
     prop: "http_port",
-    width: 220
+    width: 120
   },
   {
     label: "转发端口数",
     prop: "stream_port",
-    width: 220
+    width: 120
   },
   {
     label: "自定义CC规则",
     prop: "stream_port",
-    width: 220,
+    width: 150,
     formatter: value => {
       return value === 1 ? "支持" : "不支持";
     }
