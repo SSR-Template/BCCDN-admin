@@ -68,6 +68,14 @@ export const getSiteTopStatics = params => {
   return http.request("get", "/monitor/site/top", {}, { params });
 };
 
+export const getBlackList = params => {
+  return http.request("get", "/monitor/site/blackip", {}, { params });
+};
+
+export const getBlackListStatics = () => {
+  return http.request("get", "/monitor/site/blackip-count");
+};
+
 export const getDomainList = params => {
   return http.request("get", "/domains", {}, { params });
 };

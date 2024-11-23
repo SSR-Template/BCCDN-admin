@@ -82,6 +82,14 @@ export default {
           meta: {
             title: "攻击分析"
           }
+        },
+        {
+          path: "/console/statistics/blacklist",
+          name: "ConsoleStatisticsBlackList",
+          component: () => import("@/views/console/statistics/blacklist.vue"),
+          meta: {
+            title: "黑名单IP"
+          }
         }
       ]
     },
