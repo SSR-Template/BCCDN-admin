@@ -90,6 +90,15 @@ export default {
           meta: {
             title: "黑名单IP"
           }
+        },
+        {
+          path: "/console/statistics/log-download",
+          name: "ConsoleStatisticsLogDownload",
+          component: () =>
+            import("@/views/console/statistics/log-download.vue"),
+          meta: {
+            title: "日志下载"
+          }
         }
       ]
     },

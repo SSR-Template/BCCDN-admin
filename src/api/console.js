@@ -76,6 +76,10 @@ export const getBlackListStatics = () => {
   return http.request("get", "/monitor/site/blackip-count");
 };
 
+export const getLogList = params => {
+  return http.request("get", "/monitor/site/access-log", {}, { params });
+};
+
 export const getDomainList = params => {
   return http.request("get", "/domains", {}, { params });
 };
