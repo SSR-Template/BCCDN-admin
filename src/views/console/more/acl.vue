@@ -2,7 +2,6 @@
 import { ElMessage } from "element-plus";
 import { ArrowDown, ArrowUp } from "@element-plus/icons-vue";
 import { onMounted, reactive, ref } from "vue";
-import { useRouter } from "vue-router";
 import {
   getACLList,
   createACL,
@@ -12,7 +11,6 @@ import {
 } from "@/api/console";
 import { aclMatchList, aclMatchOperatorList } from "@/model";
 
-const router = useRouter();
 const isLoading = ref(false);
 const isExpendSearch = ref(false);
 const searchForm = reactive({});
@@ -32,7 +30,9 @@ const getList = async () => {
 };
 
 const modal = ref(false);
-const formData = ref({});
+const formData = ref({
+  default_action: "allow"
+});
 const aclRuleList = ref([]);
 const handleCreate = async () => {
   if (formData.value.id) {
@@ -53,7 +53,9 @@ const handleCreate = async () => {
     ElMessage.success("创建成功");
   }
 
-  formData.value = {};
+  formData.value = {
+    default_action: "allow"
+  };
   aclRuleList.value = [];
   modal.value = false;
   getList();
@@ -61,7 +63,10 @@ const handleCreate = async () => {
 
 const matchModal = ref(false);
 const matchRuleList = ref([]);
-const matchFormData = ref({});
+const matchFormData = ref({
+  acl_action: "allow",
+  value: ""
+});
 
 const selection = ref([]);
 const handleBatchOption = async type => {
@@ -315,7 +320,10 @@ onMounted(async () => {
             @click="
               () => {
                 matchRuleList.push({ ...matchFormData });
-                matchFormData = {};
+                matchFormData = {
+                  acl_action: 'allow',
+                  value: ''
+                };
               }
             "
           >
@@ -345,7 +353,11 @@ onMounted(async () => {
                   ])
                 )
               });
-              matchFormData = {};
+              matchFormData = {
+                acl_action: 'allow',
+                value: ''
+              };
+              console.log(matchFormData);
               matchRuleList = [];
               matchModal = false;
             }
