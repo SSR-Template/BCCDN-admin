@@ -54,6 +54,7 @@ const formData = reactive({
   block_proxy: false,
   block_region: ""
 });
+const httpsExpend = ref(false);
 const backendModal = ref(false);
 const backendFormData = reactive({
   addr: "",
@@ -281,121 +282,126 @@ onMounted(async () => {
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="监听端口">
-              <el-input
-                v-model="formData.https_listen.port"
-                @blur="
-                  handleChange('https_listen', {
-                    port: $event.target.value
-                  })
-                "
-              />
-            </el-form-item>
-            <el-form-item label="HSTS">
-              <el-switch
-                v-model="formData.https_listen.hsts"
-                @change="handleChange('https_listen', { hsts: $event })"
-              />
-            </el-form-item>
-            <el-form-item label="HTTP2">
-              <el-switch
-                v-model="formData.https_listen.http2"
-                @change="handleChange('https_listen', { http2: $event })"
-              />
-            </el-form-item>
-            <el-form-item label="HTTP3">
-              <el-switch
-                v-model="formData.https_listen.http3"
-                @change="handleChange('https_listen', { http3: $event })"
-              />
-            </el-form-item>
-            <div class="flex items-center gap-x-4">
-              <el-form-item label="强制HTTPS">
+            <el-button block type="primary" @click="httpsExpend = !httpsExpend"
+              >更多设置</el-button
+            >
+            <template v-if="httpsExpend">
+              <el-form-item label="监听端口">
+                <el-input
+                  v-model="formData.https_listen.port"
+                  @blur="
+                    handleChange('https_listen', {
+                      port: $event.target.value
+                    })
+                  "
+                />
+              </el-form-item>
+              <el-form-item label="HSTS">
                 <el-switch
-                  v-model="formData.https_listen.force_ssl_enable"
+                  v-model="formData.https_listen.hsts"
+                  @change="handleChange('https_listen', { hsts: $event })"
+                />
+              </el-form-item>
+              <el-form-item label="HTTP2">
+                <el-switch
+                  v-model="formData.https_listen.http2"
+                  @change="handleChange('https_listen', { http2: $event })"
+                />
+              </el-form-item>
+              <el-form-item label="HTTP3">
+                <el-switch
+                  v-model="formData.https_listen.http3"
+                  @change="handleChange('https_listen', { http3: $event })"
+                />
+              </el-form-item>
+              <div class="flex items-center gap-x-4">
+                <el-form-item label="强制HTTPS">
+                  <el-switch
+                    v-model="formData.https_listen.force_ssl_enable"
+                    @change="
+                      handleChange('https_listen', { force_ssl_enable: $event })
+                    "
+                  />
+                </el-form-item>
+                <el-form-item label="跳转端口">
+                  <el-input
+                    v-model="formData.https_listen.force_ssl_port"
+                    @blur="
+                      handleChange('https_listen', {
+                        force_ssl_port: $event.target.value
+                      })
+                    "
+                  />
+                </el-form-item>
+              </div>
+              <el-form-item label="OCSP Stapling">
+                <el-switch
+                  v-model="formData.https_listen.ocsp_stapling"
                   @change="
-                    handleChange('https_listen', { force_ssl_enable: $event })
+                    handleChange('https_listen', { ocsp_stapling: $event })
                   "
                 />
               </el-form-item>
-              <el-form-item label="跳转端口">
-                <el-input
-                  v-model="formData.https_listen.force_ssl_port"
-                  @blur="
-                    handleChange('https_listen', {
-                      force_ssl_port: $event.target.value
-                    })
-                  "
-                />
-              </el-form-item>
-            </div>
-            <el-form-item label="OCSP Stapling">
-              <el-switch
-                v-model="formData.https_listen.ocsp_stapling"
-                @change="
-                  handleChange('https_listen', { ocsp_stapling: $event })
-                "
-              />
-            </el-form-item>
-            <el-form-item label="SSL配置">
-              <el-radio-group
-                v-model="formData.https_ssl_config_radio"
-                @change="
-                  value => {
-                    if (value !== 'custom') {
-                      formData.https_listen = {
-                        ...formData.https_listen,
-                        ...httpsSSLConfig[value]
-                      };
-                      handleChange('https_listen', httpsSSLConfig[value]);
+              <el-form-item label="SSL配置">
+                <el-radio-group
+                  v-model="formData.https_ssl_config_radio"
+                  @change="
+                    value => {
+                      if (value !== 'custom') {
+                        formData.https_listen = {
+                          ...formData.https_listen,
+                          ...httpsSSLConfig[value]
+                        };
+                        handleChange('https_listen', httpsSSLConfig[value]);
+                      }
                     }
-                  }
-                "
-              >
-                <el-radio value="old">兼容旧浏览器</el-radio>
-                <el-radio value="partly">兼容大部分浏览器(更安全)</el-radio>
-                <el-radio value="custom">自定义</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <template v-if="formData.https_ssl_config_radio === 'custom'">
-              <el-form-item label="ssl_protocols">
-                <el-input
-                  v-model="formData.https_listen.ssl_protocols"
-                  @blur="
-                    handleChange('https_listen', {
-                      ssl_protocols: $event.target.value,
-                      ssl_ciphers: formData.https_listen.ssl_ciphers,
-                      ssl_prefer_server_ciphers:
-                        formData.https_listen.ssl_prefer_server_ciphers
-                    })
                   "
-                />
+                >
+                  <el-radio value="old">兼容旧浏览器</el-radio>
+                  <el-radio value="partly">兼容大部分浏览器(更安全)</el-radio>
+                  <el-radio value="custom">自定义</el-radio>
+                </el-radio-group>
               </el-form-item>
-              <el-form-item label="ssl_ciphers">
-                <el-input
-                  v-model="formData.https_listen.ssl_ciphers"
-                  @blur="
-                    handleChange('https_listen', {
-                      ssl_protocols: formData.https_listen.ssl_protocols,
-                      ssl_ciphers: $event.target.value,
-                      ssl_prefer_server_ciphers:
-                        formData.https_listen.ssl_prefer_server_ciphers
-                    })
-                  "
-                />
-              </el-form-item>
-              <el-form-item label="ssl_prefer_server_ciphers">
-                <el-input
-                  v-model="formData.https_listen.ssl_prefer_server_ciphers"
-                  @blur="
-                    handleChange('https_listen', {
-                      ssl_protocols: formData.https_listen.ssl_protocols,
-                      ssl_ciphers: formData.https_listen.ssl_ciphers,
-                      ssl_prefer_server_ciphers: $event.target.value
-                    })
-                  "
-                />
-              </el-form-item>
+              <template v-if="formData.https_ssl_config_radio === 'custom'">
+                <el-form-item label="ssl_protocols">
+                  <el-input
+                    v-model="formData.https_listen.ssl_protocols"
+                    @blur="
+                      handleChange('https_listen', {
+                        ssl_protocols: $event.target.value,
+                        ssl_ciphers: formData.https_listen.ssl_ciphers,
+                        ssl_prefer_server_ciphers:
+                          formData.https_listen.ssl_prefer_server_ciphers
+                      })
+                    "
+                  />
+                </el-form-item>
+                <el-form-item label="ssl_ciphers">
+                  <el-input
+                    v-model="formData.https_listen.ssl_ciphers"
+                    @blur="
+                      handleChange('https_listen', {
+                        ssl_protocols: formData.https_listen.ssl_protocols,
+                        ssl_ciphers: $event.target.value,
+                        ssl_prefer_server_ciphers:
+                          formData.https_listen.ssl_prefer_server_ciphers
+                      })
+                    "
+                  />
+                </el-form-item>
+                <el-form-item label="ssl_prefer_server_ciphers">
+                  <el-input
+                    v-model="formData.https_listen.ssl_prefer_server_ciphers"
+                    @blur="
+                      handleChange('https_listen', {
+                        ssl_protocols: formData.https_listen.ssl_protocols,
+                        ssl_ciphers: formData.https_listen.ssl_ciphers,
+                        ssl_prefer_server_ciphers: $event.target.value
+                      })
+                    "
+                  />
+                </el-form-item>
+              </template>
             </template>
           </template>
         </el-form>

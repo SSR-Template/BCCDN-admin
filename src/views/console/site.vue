@@ -346,11 +346,11 @@ onMounted(async () => {
           {{ JSON.parse(row.http_listen)?.port }}
         </template>
       </el-table-column>
-      <el-table-column
-        prop="group_name"
-        label="监听端口"
-        show-overflow-tooltip
-      />
+      <el-table-column label="监听端口" show-overflow-tooltip>
+        <template #default="{ row }">
+          {{ `${row.backend_http_port} ${row.backend_https_port}s` }}
+        </template>
+      </el-table-column>
       <el-table-column label="源IP" show-overflow-tooltip>
         <template #default="{ row }">
           {{ JSON.parse(row.backend)?.addr }}

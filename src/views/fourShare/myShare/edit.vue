@@ -160,7 +160,7 @@ onMounted(async () => {
         <el-switch v-model="formData.proxy_protocol" />
       </el-form-item>
       <el-form-item label="源站列表">
-        <div class="space-y-4">
+        <div class="space-y-4 w-full">
           <el-button size="small" type="primary" @click="backendModal = true"
             >新增</el-button
           >
