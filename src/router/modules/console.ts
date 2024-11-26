@@ -99,6 +99,14 @@ export default {
           meta: {
             title: "日志下载"
           }
+        },
+        {
+          path: "/console/statistics/usage",
+          name: "ConsoleStatisticsUsage",
+          component: () => import("@/views/console/statistics/usage.vue"),
+          meta: {
+            title: "用量查询"
+          }
         }
       ]
     },
