@@ -406,9 +406,9 @@ onMounted(async () => {
           </template>
         </el-form>
         <Label value="源站设置" />
-        <el-form :model="formData" class="w-[600px]">
+        <el-form :model="formData">
           <el-form-item label="源站列表">
-            <div class="space-y-4">
+            <div class="space-y-4 w-full">
               <el-button
                 size="small"
                 type="success"
