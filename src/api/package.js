@@ -20,17 +20,18 @@ export const chargeMyPackage = (id, data) => {
   return http.request("put", `/user-packages/${id}`, data);
 };
 
-export const getPackageList = group => {
-  return http.request("get", `/packages?page=1&limit=0&group=${group}&mine=`);
+export const getPackageGroupList = params => {
+  return http.request("get", "/package-groups", {}, { params });
 };
 
-export const checkPackage = (id, { duration = "", coupon_code = "" }) => {
-  return http.request(
-    "get",
-    `/packages/${id}?duration=${duration}&coupon_code=${coupon_code}`
-  );
+export const getPackageList = params => {
+  return http.request("get", "/packages", {}, { params });
 };
 
-export const postPackage = data => {
+export const checkPackage = (id, params) => {
+  return http.request("get", `/packages/${id}`, {}, { params });
+};
+
+export const createPackage = data => {
   return http.request("post", "/user-packages", {}, { data });
 };

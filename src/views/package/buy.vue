@@ -1,312 +1,222 @@
-<script setup lang="ts">
-import { computed, onMounted, ref, watchEffect } from "vue";
-import {
-  useTable,
-  PlusTable,
-  PlusColumn,
-  FieldValues,
-  PlusDialogForm
-} from "plus-pro-components";
-import "plus-pro-components/es/components/table/style/css";
-import "plus-pro-components/es/components/dialog-form/style/css";
-import { getPackageList, postPackage, checkPackage } from "@/api/package";
+<script setup>
 import { ElMessage } from "element-plus";
+import { onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import {
+  getPackageList,
+  getPackageGroupList,
+  checkPackage,
+  createPackage
+} from "@/api/package";
 
-const visible = ref(false);
-const values = ref<FieldValues>({});
-const detailModelInfo = ref<FieldValues>({});
-const showMoney = ref<FieldValues>({});
-
-const packageSelect = ref(0);
-const packageOptions = computed(() => {
-  return [
-    {
-      label: "特殊行业【套餐-非不可描述】"
-    },
-    {
-      label: "新香港超防-【套餐】"
-    },
-    {
-      label: "移动CDN过屏蔽-【套餐】"
-    },
-    {
-      label: "香港线路大带宽-【套餐】"
-    },
-    {
-      label: "常规版-不允许有任何违规【套餐】"
-    }
-  ];
+const router = useRouter();
+const isLoading = ref(false);
+const searchForm = reactive({
+  mine: "",
+  group: ""
 });
-
-const { tableData, buttons } = useTable();
-
-buttons.value = [
-  {
-    text: "购买",
-    props() {
-      return {
-        type: "primary"
-      };
-    },
-    code: "primary",
-    onClick: params => {
-      visible.value = true;
-      detailModelInfo.value = params.row;
-    }
-  }
-];
-
-const tableConfig: PlusColumn[] = [
-  {
-    label: "套餐",
-    width: 220,
-    prop: "name"
-  },
-  {
-    label: "流量(GB)",
-    prop: "traffic",
-    width: 120,
-    formatter: value => {
-      return value === -1 ? "不限制" : value;
-    }
-  },
-  {
-    label: "带宽",
-    prop: "bandwidth",
-    width: 120,
-    formatter: value => {
-      return value === -1 ? "不限制" : value;
-    }
-  },
-  {
-    label: "连接数",
-    prop: "connection",
-    width: 120,
-    formatter: value => {
-      return value === -1 ? "不限制" : value;
-    }
-  },
-  {
-    label: "域名数 / 主域名数",
-    prop: "domain",
-    width: 150,
-    render: (value, { row }) => {
-      return `${row.domain} / ${row.main_domain === -1 ? "不限制" : row.main_domain}`;
-    }
-  },
-  {
-    label: "HTTP端口数",
-    prop: "http_port",
-    width: 80
-  },
-  {
-    label: "转发端口数",
-    prop: "stream_port",
-    width: 80
-  },
-  {
-    label: "自定义CC规则",
-    prop: "stream_port",
-    width: 80,
-    formatter: value => {
-      return value === 1 ? "支持" : "不支持";
-    }
-  },
-  {
-    label: "Websocket",
-    prop: "websocket",
-    width: 80,
-    formatter: value => {
-      return value === 1 ? "支持" : "不支持";
-    }
-  },
-  {
-    label: "月价(元)",
-    width: 120,
-    prop: "month_price"
-  },
-  {
-    label: "季价(元)",
-    width: 120,
-    prop: "quarter_price"
-  },
-  {
-    label: "年价(元)",
-    width: 120,
-    prop: "year_price"
-  }
-];
-
-const formConfig: PlusColumn[] = [
-  {
-    label: "购买时长",
-    width: 120,
-    prop: "duration",
-    valueType: "select",
-    options: [
-      {
-        label: "月付",
-        value: "month"
-      },
-      {
-        label: "季付",
-        value: "quarter"
-      },
-      {
-        label: "年付",
-        value: "year"
-      }
-    ],
-    fieldProps() {
-      checkCoupon();
-      return {};
-    }
-  },
-  {
-    label: "自定义名称",
-    width: 120,
-    prop: "name",
-    valueType: "input"
-  },
-  {
-    label: "优惠码",
-    width: 120,
-    prop: "coupon_code",
-    valueType: "input"
-  },
-  {
-    label: "订单金额",
-    width: 120,
-    prop: "orderMoney",
-    valueType: "input",
-    fieldProps() {
-      return {
-        readonly: true
-      };
-    }
-  },
-  {
-    label: "优惠金额",
-    width: 120,
-    prop: "couponMoney",
-    valueType: "input",
-    fieldProps() {
-      return {
-        readonly: true
-      };
-    }
-  },
-  {
-    label: "应付金额",
-    width: 120,
-    prop: "payMoney",
-    valueType: "input",
-    fieldProps() {
-      return {
-        readonly: true
-      };
-    }
-  }
-];
-
-const getTableData = () => {
-  getPackageList(packageSelect.value + 1).then(res => {
-    tableData.value = res.data;
-  });
-};
-
-const submit = () => {
-  postPackage({
-    coupon_code: values.value.coupon_code,
-    package: detailModelInfo.value.id,
-    duration: values.value.duration,
-    name: values.value.name
-  }).then(res => {
-    if (res.code === 0) {
-      ElMessage.success("购买成功");
-      visible.value = false;
-      getTableData();
-    } else {
-      ElMessage.error(res.msg);
-    }
-  });
-};
-
-const dialogConfig = computed(() => {
-  return {
-    title: "购买套餐",
-    okText: "确定",
-    cancelText: "取消"
-  };
+const packageGroupList = ref([]);
+const pagination = reactive({
+  page: 1,
+  limit: 10,
+  count: 0
 });
-
-const checkCoupon = () => {
-  checkPackage(detailModelInfo.value.id, {
-    coupon_code: values.value.coupon_code,
-    duration: values.value.duration
-  }).then(res => {
-    if (res.data.err) {
-      ElMessage.error(res.data.err);
-      showMoney.value = {};
-      return;
-    }
-    values.value["orderMoney"] =
-      res.data?.[`${values.value.duration}_price`] || 0;
-    values.value["couponMoney"] = res.data?.id_verify || 0;
-    values.value["payMoney"] = res.data?.new_price || 0;
-    values.value["name"] = res.data?.name || 0;
-    showMoney.value = res.data;
+const tableData = ref([]);
+const getList = async () => {
+  const { count, data } = await getPackageList({
+    ...pagination,
+    ...searchForm
   });
+  tableData.value = data;
+  pagination.count = count;
 };
 
-onMounted(getTableData);
+const modal = ref(false);
+const formData = ref({});
 
-watchEffect(getTableData);
+const handleCheck = async () => {
+  const { data } = await checkPackage(formData.value.id, formData.value);
+  formData.value.orgin_price = data.orgin_price;
+  formData.value.new_price = data.new_price;
+};
+
+const handleBuy = async () => {
+  await createPackage({
+    ...formData.value,
+    package: formData.value.id
+  });
+  ElMessage.success("购买成功");
+  modal.value = false;
+};
+
+onMounted(async () => {
+  isLoading.value = true;
+  try {
+    ({ data: packageGroupList.value } = await getPackageGroupList({
+      limit: 0
+    }));
+    searchForm.group = packageGroupList.value[0].id;
+    await getList();
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
-<template>
-  <el-card>
-    <template #header> 购买套餐 </template>
-    <el-radio-group v-model="packageSelect" class="mb-4" size="default">
-      <el-radio
-        v-for="(item, index) in packageOptions"
-        :key="index"
-        :value="index"
-        size="large"
-        border
-      >
-        <div class="flex gap-2 items-center">
-          {{ item.label }}
-        </div>
-      </el-radio>
-    </el-radio-group>
-    <PlusDialogForm
-      v-model:visible="visible"
-      v-model="values"
-      width="500px"
-      :dialog="dialogConfig"
-      :form="{ columns: formConfig, labelWidth: '100px' }"
-      @confirm="submit"
-    />
-    <PlusTable
-      default-size="large"
-      :columns="tableConfig"
-      :table-data="tableData"
-      :drag-sortable="false"
-      :title-bar="false"
-      :action-bar="{
-        label: '购买',
-        buttons: buttons,
-        type: 'button'
-      }"
-    >
-      <template #density-icon> <div /> </template>
 
-      <template #title>
-        <el-button type="primary">新增</el-button>
-        <el-button type="info">启用</el-button>
-        <el-button type="warning">禁用</el-button>
-        <el-button type="danger">删除</el-button>
+<template>
+  <div class="h-full bg-white rounded-xl p-4 flex flex-col gap-y-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <el-button
+          v-for="item of packageGroupList"
+          :key="item.id"
+          size="small"
+          :type="searchForm.group === item.id ? 'primary' : 'default'"
+          @click="
+            () => {
+              searchForm.group = item.id;
+              pagination.page = 1;
+              getList();
+            }
+          "
+        >
+          {{ item.name }}
+        </el-button>
+      </div>
+    </div>
+    <el-table
+      v-loading="isLoading"
+      size="small"
+      :data="tableData"
+      style="width: 100%; height: 0; flex: 1"
+    >
+      <el-table-column prop="id" label="ID" show-overflow-tooltip />
+      <el-table-column prop="name" label="套餐" show-overflow-tooltip />
+      <el-table-column label="流量" show-overflow-tooltip>
+        <template #default="{ row }">
+          {{ row.traffic === -1 ? "不限制" : `${row.traffic}Mbps` }}
+        </template>
+      </el-table-column>
+      <el-table-column label="连接数" show-overflow-tooltip>
+        <template #default="{ row }">
+          {{ row.connection === -1 ? "不限制" : row.connection }}
+        </template>
+      </el-table-column>
+      <el-table-column label="域名数/主域名数" show-overflow-tooltip>
+        <template #default="{ row }">
+          {{
+            `${row.domain === -1 ? "不限制" : row.domain}/${row.main_domain === -1 ? "不限制" : row.main_domain}`
+          }}
+        </template>
+      </el-table-column>
+      <el-table-column label="HTTP端口数" show-overflow-tooltip>
+        <template #default="{ row }">
+          {{ row.http_port === -1 ? "不限制" : row.http_port }}
+        </template>
+      </el-table-column>
+      <el-table-column label="转发端口数" show-overflow-tooltip>
+        <template #default="{ row }">
+          {{ row.stream_port === -1 ? "不限制" : row.stream_port }}
+        </template>
+      </el-table-column>
+      <el-table-column label="自定义CC规则" show-overflow-tooltip>
+        <template #default="{ row }">
+          {{ row.custom_cc_rule === 1 ? "支持" : "不支持" }}
+        </template>
+      </el-table-column>
+      <el-table-column label="WebSocket" show-overflow-tooltip>
+        <template #default="{ row }">
+          {{ row.websocket === 1 ? "支持" : "不支持" }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="月价(元)"
+        prop="month_price"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="季价(元)"
+        prop="quarter_price"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="年价(元)"
+        prop="year_price"
+        show-overflow-tooltip
+      />
+      <el-table-column label="购买" width="100" fixed="right">
+        <template #default="{ row }">
+          <div class="flex items-center">
+            <el-button
+              size="small"
+              type="primary"
+              @click="
+                () => {
+                  formData.id = row.id;
+                  formData.name = row.name;
+                  modal = true;
+                }
+              "
+            >
+              购买
+            </el-button>
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+      v-model:current-page="pagination.page"
+      v-model:page-size="pagination.limit"
+      size="small"
+      background
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="pagination.count"
+      @change="getList"
+    />
+
+    <el-dialog
+      v-model="modal"
+      :title="`购买${formData.name}套餐`"
+      append-to-body
+    >
+      <el-form :model="formData" label-width="100" label-position="left">
+        <el-form-item label="购买时长">
+          <el-select
+            v-model="formData.duration"
+            style="width: 220px"
+            @change="handleCheck"
+          >
+            <el-option label="月付" value="month" />
+            <el-option label="季度付" value="quarter" />
+            <el-option label="年付" value="year" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="自定义名称">
+          <el-input v-model="formData.name" style="width: 220px" />
+        </el-form-item>
+        <el-form-item v-if="formData.orgin_price" label="订单金额">
+          {{ formData.orgin_price }}元
+        </el-form-item>
+        <el-form-item
+          v-if="formData.orgin_price && formData.new_price"
+          label="优惠金额"
+        >
+          {{ formData.orgin_price - formData.new_price }}元
+        </el-form-item>
+        <el-form-item v-if="formData.new_price" label="应付金额">
+          {{ formData.new_price }}元
+        </el-form-item>
+        <el-form-item label="优惠码">
+          <el-input
+            v-model="formData.coupon_code"
+            style="width: 220px"
+            @blur="handleCheck"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button type="primary" @click="handleBuy">确定</el-button>
       </template>
-    </PlusTable>
-  </el-card>
+    </el-dialog>
+  </div>
 </template>
