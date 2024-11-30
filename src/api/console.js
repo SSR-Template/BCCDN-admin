@@ -60,6 +60,66 @@ export const createJob = data => {
   return http.request("post", "/jobs", {}, { data });
 };
 
+export const getCCRuleList = params => {
+  return http.request("get", "/cc-rules", {}, { params });
+};
+
+export const createCCRule = data => {
+  return http.request("post", "/cc-rules?internal=0", {}, { data });
+};
+
+export const optionCCRule = data => {
+  return http.request("put", "/cc-rules", {}, { data });
+};
+
+export const editCCRule = (id, data) => {
+  return http.request("put", `/cc-rules/${id}`, {}, { data });
+};
+
+export const deleteCCRule = id => {
+  return http.request("delete", `/cc-rules/${id}`);
+};
+
+export const getCCMatchList = params => {
+  return http.request("get", "/cc-matchs", {}, { params });
+};
+
+export const createCCMather = data => {
+  return http.request("post", "/cc-matchs?internal=0", {}, { data });
+};
+
+export const optionCCMather = data => {
+  return http.request("put", "/cc-matchs", {}, { data });
+};
+
+export const editCCMather = (id, data) => {
+  return http.request("put", `/cc-matchs/${id}`, {}, { data });
+};
+
+export const deleteCCMather = id => {
+  return http.request("delete", `/cc-matchs/${id}`);
+};
+
+export const getCCFilterList = params => {
+  return http.request("get", "/cc-filters", {}, { params });
+};
+
+export const createCCFilter = data => {
+  return http.request("post", "/cc-filters?internal=0", {}, { data });
+};
+
+export const optionCCFilter = data => {
+  return http.request("put", "/cc-filters", {}, { data });
+};
+
+export const editCCFilter = (id, data) => {
+  return http.request("put", `/cc-filters/${id}`, {}, { data });
+};
+
+export const deleteCCFilter = id => {
+  return http.request("delete", `/cc-filters/${id}`);
+};
+
 export const getSiteRealtimeStatics = params => {
   return http.request("get", "/monitor/site/realtime", {}, { params });
 };

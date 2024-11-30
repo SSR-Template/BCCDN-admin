@@ -52,6 +52,14 @@ export default {
       }
     },
     {
+      path: "/console/cc-rules",
+      name: "ConsoleCCRules",
+      component: () => import("@/views/console/cc-rules.vue"),
+      meta: {
+        title: "CC规则"
+      }
+    },
+    {
       path: "/console/statistics",
       name: "ConsoleStatistics",
       redirect: "/console/statistics/realtime",

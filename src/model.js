@@ -1,3 +1,34 @@
+export const ccFilterList = [
+  {
+    label: "请求速率",
+    value: "req_rate"
+  },
+  {
+    label: "302跳转",
+    value: "302_challenge"
+  },
+  {
+    label: "浏览器识别",
+    value: "browser_verify_auto"
+  },
+  {
+    label: "滑动验证",
+    value: "slide_filter"
+  },
+  {
+    label: "验证码",
+    value: "captcha_filter"
+  },
+  {
+    label: "URL鉴权",
+    value: "url_auth"
+  },
+  {
+    label: "点击验证",
+    value: "click_filter"
+  }
+];
+
 export const dnsApiList = [
   {
     label: "CloudFlare",
@@ -87,7 +118,7 @@ export const aclMatchList = [
     value: "country_iso_code"
   },
   {
-    label: "accept_language请求头",
+    label: "accept_language",
     value: "accept_language"
   },
   {
