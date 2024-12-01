@@ -90,7 +90,7 @@ export function resetRouter() {
 }
 
 /** 路由白名单 */
-const whiteList = ["/login"];
+const whiteList = ["/login", "/register", "/forget"];
 
 router.beforeEach((to: ToRouteType, _from, next) => {
   if (to.meta?.keepAlive) {
@@ -133,7 +133,7 @@ router.beforeEach((to: ToRouteType, _from, next) => {
     } else {
       toCorrectRoute();
     }
-  } else if (to.path === "/login") {
+  } else if (whiteList.includes(to.path)) {
     next();
   } else {
     removeToken();

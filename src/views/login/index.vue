@@ -144,6 +144,15 @@ onKeyStroke(["Enter", "NumpadEnter"], () => {
                 登录
               </el-button>
             </Motion>
+
+            <Motion :delay="300">
+              <div
+                class="flex items-center justify-end gap-x-4 text-sm text-primary mt-4"
+              >
+                <div @click="router.push('/register')">注册账号</div>
+                <div @click="router.push('/forget')">忘记密码</div>
+              </div>
+            </Motion>
           </el-form>
         </div>
       </div>

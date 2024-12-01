@@ -53,3 +53,19 @@ export const submitLogin = (data: LoginBody) => {
 export const refreshTokenApi = (data?: object) => {
   return http.request<RefreshTokenResult>("post", "/refresh-token", { data });
 };
+
+export const submitRegister = (data: any) => {
+  return http.request("post", "/user", {}, { data });
+};
+
+export const emailValidCode = (data: any) => {
+  return http.request("post", "/email-captcha", {}, { data });
+};
+
+export const phoneValidCode = (data: any) => {
+  return http.request("post", "/phone-captcha", {}, { data });
+};
+
+export const resetPassword = (data: any) => {
+  return http.request("post", "/reset-pass", {}, { data });
+};
