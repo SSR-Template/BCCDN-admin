@@ -341,11 +341,7 @@ onMounted(async () => {
       <el-table-column prop="id" label="ID" show-overflow-tooltip />
       <el-table-column prop="package_name" label="套餐" show-overflow-tooltip />
       <el-table-column prop="group_name" label="分组" show-overflow-tooltip />
-      <el-table-column label="域名" show-overflow-tooltip>
-        <template #default="{ row }">
-          {{ JSON.parse(row.http_listen)?.port }}
-        </template>
-      </el-table-column>
+      <el-table-column label="域名" prop="domain" show-overflow-tooltip />
       <el-table-column label="监听端口" show-overflow-tooltip>
         <template #default="{ row }">
           {{ `${row.backend_http_port} ${row.backend_https_port}s` }}
@@ -353,7 +349,7 @@ onMounted(async () => {
       </el-table-column>
       <el-table-column label="源IP" show-overflow-tooltip>
         <template #default="{ row }">
-          {{ JSON.parse(row.backend)?.addr }}
+          {{ JSON.parse(row.backend)?.[0].addr }}
         </template>
       </el-table-column>
       <el-table-column
