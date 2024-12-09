@@ -90,7 +90,7 @@ const reqHeaderTableData = ref([]);
 const sslProtocolsRadio = ref("old");
 
 const handleSubmit = async () => {
-  let value = formData.value;
+  let value = formData.value.value;
   switch (formData.value.name) {
     case "proxy_cache":
       value = JSON.stringify(cacheTableData.value);

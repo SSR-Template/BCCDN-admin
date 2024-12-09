@@ -26,16 +26,6 @@ export default {
       }
     },
     {
-      path: "/console/site-update",
-      name: "ConsoleSiteUpdate",
-      component: () => import("@/views/console/site-update.vue"),
-      meta: {
-        title: "修改网站",
-        showLink: false,
-        activePath: "/console/site"
-      }
-    },
-    {
       path: "/console/group",
       name: "ConsoleGroup",
       component: () => import("@/views/console/group.vue"),

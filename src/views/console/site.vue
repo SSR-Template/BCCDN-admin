@@ -91,17 +91,6 @@ const handleBatchOption = async type => {
     return;
   }
 
-  if (type === "update") {
-    router.push({
-      path: "/console/site-update",
-      query: {
-        ids: selection.value.map(i => i.id),
-        domains: selection.value.map(i => i.domain)
-      }
-    });
-    return;
-  }
-
   if (["enable", "disable"].includes(type)) {
     await Promise.all(
       selection.value.map(i =>
@@ -291,12 +280,6 @@ onMounted(async () => {
         <el-button size="small" type="success" @click="createModal = true"
           >新增</el-button
         >
-        <el-button
-          size="small"
-          type="primary"
-          @click="handleBatchOption('update')"
-          >修改
-        </el-button>
         <el-button
           size="small"
           type="primary"
