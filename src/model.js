@@ -1,3 +1,68 @@
+export const certStatusList = [
+  {
+    label: "不限",
+    value: ""
+  },
+  {
+    label: "待签发",
+    value: "pending"
+  },
+  {
+    label: "签发中",
+    value: "process"
+  },
+  {
+    label: "失败",
+    value: "failed"
+  },
+  {
+    label: "完成",
+    value: "done"
+  }
+];
+
+export const certExpireList = [
+  {
+    label: "不限",
+    value: ""
+  },
+  {
+    label: "一个月内",
+    value: "30"
+  },
+  {
+    label: "一周内",
+    value: "7"
+  },
+  {
+    label: "不限",
+    value: "0"
+  }
+];
+
+export const certTypeList = [
+  {
+    label: "不限",
+    value: ""
+  },
+  {
+    label: "用户上传",
+    value: "custom"
+  },
+  {
+    label: "ZeroSSL",
+    value: "zerossl"
+  },
+  {
+    label: "Let's Encrypt",
+    value: "lets"
+  },
+  {
+    label: "BuyPass.com",
+    value: "buypass"
+  }
+];
+
 export const ccFilterList = [
   {
     label: "请求速率",

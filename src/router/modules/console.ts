@@ -52,6 +52,14 @@ export default {
       }
     },
     {
+      path: "/console/cert",
+      name: "ConsoleCert",
+      component: () => import("@/views/console/cert.vue"),
+      meta: {
+        title: "证书管理"
+      }
+    },
+    {
       path: "/console/cc-rules",
       name: "ConsoleCCRules",
       component: () => import("@/views/console/cc-rules.vue"),

@@ -52,6 +52,26 @@ export const getCertList = params => {
   return http.get("/certs", params);
 };
 
+export const createCert = data => {
+  return http.request("post", "/certs", {}, { data });
+};
+
+export const getCertDetail = id => {
+  return http.request("get", `/certs/${id}`);
+};
+
+export const editCert = (id, data) => {
+  return http.request("put", `/certs/${id}`, {}, { data });
+};
+
+export const optionCert = data => {
+  return http.request("put", "/certs", {}, { data });
+};
+
+export const deleteCert = id => {
+  return http.request("delete", `/certs/${id}`);
+};
+
 export const getJobList = params => {
   return http.request("get", "/jobs", {}, { params });
 };
