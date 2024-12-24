@@ -1,3 +1,42 @@
+export const siteCustomRuleFilterList = [
+  {
+    label: "请求频率",
+    value: "req_rate"
+  },
+  {
+    label: "无感验证",
+    value: "browser_verify_auto"
+  },
+  {
+    label: "5秒盾",
+    value: "delay_jump_filter"
+  },
+  {
+    label: "点击验证",
+    value: "click_filter"
+  },
+  {
+    label: "滑动验证",
+    value: "slide_filter"
+  },
+  {
+    label: "验证码",
+    value: "captcha_filter"
+  },
+  {
+    label: "旋转图片",
+    value: "rotate_filter"
+  },
+  {
+    label: "302跳转",
+    value: "302_challenge"
+  },
+  {
+    label: "URL鉴权",
+    value: "url_auth"
+  }
+];
+
 export const ccRuleList = [
   {
     label: "宽松",

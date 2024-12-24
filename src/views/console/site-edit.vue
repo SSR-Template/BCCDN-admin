@@ -1,6 +1,6 @@
 <script setup>
 import Label from "@/components/Label/index.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import {
   getSiteDetail,
   getSiteGroupList,
@@ -12,7 +12,14 @@ import {
 import { getMyPackageList } from "@/api/package";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { sslConfigMapping, ccRuleList, regionList } from "@/model";
+import {
+  sslConfigMapping,
+  ccRuleList,
+  regionList,
+  aclMatchList,
+  siteCustomRuleFilterList,
+  aclMatchOperatorList
+} from "@/model";
 import Tabs from "@/components/Tabs/index.vue";
 import { ArrowDown, ArrowUp } from "@element-plus/icons-vue";
 
@@ -69,7 +76,7 @@ const formData = ref({
   proxy_cache: [],
   cc_default_rule: "10002",
   cc_switch: {},
-  // extra_cc_rule: []
+  extra_cc_rule: [],
   spider_allow: "",
   black_ip: "",
   white_ip: "",
@@ -140,17 +147,64 @@ const urlRedirectForm = ref({
   code: "301"
 });
 
-// const customRuleList = ref([]);
-// const customRuleModal = ref(false);
-// const customRuleForm = ref({
-//   filter: {},
-//   matcher: {}
-// });
-// const customMatchRuleForm = ref({
-//   name: "",
-//   operator: "",
-//   value: ""
-// });
+const customRuleList = ref([]);
+const customRuleModal = ref(false);
+const customRuleForm = ref({
+  filter: {
+    extra: {},
+    max_challenge: "5",
+    max_per_uri: "",
+    type: "",
+    within_second: "60"
+  },
+  matcher: {}
+});
+const customRuleBlock = ref(true);
+const customMatchRuleForm = ref({
+  name: "",
+  operator: "",
+  value: ""
+});
+watch(
+  () => customRuleForm.value.filter.type,
+  val => {
+    if (val === "url_auth") {
+      customRuleForm.value.filter.extra = {
+        key: "mnJ45YpPAsjSA52h",
+        mode: "TypeA",
+        sign_name: "sign",
+        sign_use_times: "10",
+        time_diff: "180",
+        time_name: "sign"
+      };
+    }
+  }
+);
+const getCustomFilterTypeName = row => {
+  if (row.filter.type !== "req_rate") {
+    return siteCustomRuleFilterList.filter(i => i.value === row.filter.type)[0]
+      ?.label;
+  }
+  if (
+    +row.filter.max_challenge === 0 &&
+    +row.filter.max_per_uri === 0 &&
+    +row.filter.within_second === 11
+  ) {
+    return "拉黑";
+  }
+  if (
+    +row.filter.max_challenge === 11111 &&
+    +row.filter.max_per_uri === 11111 &&
+    +row.filter.within_second === 11
+  ) {
+    return "放行";
+  }
+  return `
+    针对单个IP地址:
+    总请求允许 ${row.filter.max_challenge}次/10秒
+    同URL允许 ${row.filter.max_per_uri}次/10秒
+  `;
+};
 
 const submit = async () => {
   if (!enableHttp.value) {
@@ -176,7 +230,8 @@ const submit = async () => {
     proxy_cache: cacheList.value,
     url_rewrite: urlRedirectList.value,
     resp_header: resHeaderList.value,
-    req_header: reqHeaderList.value
+    req_header: reqHeaderList.value,
+    extra_cc_rule: customRuleList.value
   });
   ElMessage.success("修改成功");
   router.back();
@@ -194,7 +249,7 @@ onMounted(async () => {
         "health_check",
         "proxy_cache",
         "cc_switch",
-        // "extra_cc_rule"
+        "extra_cc_rule",
         "hotlink",
         "cors",
         "url_rewrite",
@@ -235,9 +290,9 @@ onMounted(async () => {
     cacheList.value = formData.value.proxy_cache.slice();
   }
 
-  // if (formData.value.extra_cc_rule.length) {
-  //   customRuleList.value = formData.value.extra_cc_rule.slice();
-  // }
+  if (formData.value.extra_cc_rule.length) {
+    customRuleList.value = formData.value.extra_cc_rule.slice();
+  }
 
   if (formData.value.url_rewrite.length) {
     urlRedirectList.value = formData.value.url_rewrite.slice();
@@ -674,43 +729,49 @@ onMounted(async () => {
             </el-form-item>
           </template>
         </div>
-        <!--        <el-form-item label="自定义规则">-->
-        <!--          <div class="space-y-4 w-full">-->
-        <!--            <el-button-->
-        <!--              size="small"-->
-        <!--              type="primary"-->
-        <!--              @click="customRuleModal = true"-->
-        <!--              >新增</el-button-->
-        <!--            >-->
-        <!--            <el-table border size="small" :data="customRuleList" class="w-full">-->
-        <!--              <el-table-column label="匹配" width="300" show-overflow-tooltip>-->
-        <!--                <template #default="{ row }">-->
-        <!--                  <div clas="space-y-2">-->
-        <!--                    <div v-for="(item, key) in row.matcher" :key="key">-->
-        <!--                      {{ `${key} ${item.operator} ${item.value}` }}-->
-        <!--                    </div>-->
-        <!--                  </div>-->
-        <!--                </template>-->
-        <!--              </el-table-column>-->
-        <!--              <el-table-column label="执行过滤" show-overflow-tooltip>-->
-        <!--                <template #default="{ row }">-->
-        <!--                  {{ row.filter.type }}-->
-        <!--                </template>-->
-        <!--              </el-table-column>-->
-        <!--              <el-table-column label="操作">-->
-        <!--                <template #default="{ $index }">-->
-        <!--                  <el-button-->
-        <!--                    size="small"-->
-        <!--                    type="danger"-->
-        <!--                    @click="customRuleList.splice($index, 1)"-->
-        <!--                  >-->
-        <!--                    删除-->
-        <!--                  </el-button>-->
-        <!--                </template>-->
-        <!--              </el-table-column>-->
-        <!--            </el-table>-->
-        <!--          </div>-->
-        <!--        </el-form-item>-->
+        <el-form-item label="自定义规则">
+          <div class="space-y-4 w-full">
+            <el-button
+              size="small"
+              type="primary"
+              @click="customRuleModal = true"
+              >新增</el-button
+            >
+            <el-table border size="small" :data="customRuleList" class="w-full">
+              <el-table-column
+                label="匹配条件"
+                width="300"
+                show-overflow-tooltip
+              >
+                <template #default="{ row }">
+                  <div class="space-y-2">
+                    <div v-for="(item, key) in row.matcher" :key="key">
+                      {{
+                        `${aclMatchList.filter(i => i.value === key)[0]?.label} ${item.operator} ${item.value}`
+                      }}
+                    </div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="执行过滤" show-overflow-tooltip>
+                <template #default="{ row }">
+                  {{ getCustomFilterTypeName(row) }}
+                </template>
+              </el-table-column>
+              <el-table-column label="操作">
+                <template #default="{ $index }">
+                  <el-button
+                    size="small"
+                    type="danger"
+                    @click="customRuleList.splice($index, 1)"
+                  >
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-form-item>
         <el-form-item label="搜索引擎爬虫">
           <el-radio-group v-model="formData.spider_allow">
             <el-radio label="不设置" value="" />
@@ -1219,83 +1280,238 @@ onMounted(async () => {
         >
       </template>
     </el-dialog>
-    <!--    <el-dialog v-model="customRuleModal" title="添加自定义规则">-->
-    <!--      <el-form label-width="100" :model="customRuleForm">-->
-    <!--        <el-form-item label="匹配条件">-->
-    <!--          <div class="flex gap-2 flex-wrap">-->
-    <!--            <el-tag-->
-    <!--              v-for="(item, key) in customRuleForm.matcher"-->
-    <!--              :key="key"-->
-    <!--              closable-->
-    <!--              type="primary"-->
-    <!--              @close="delete customRuleForm.matcher[key]"-->
-    <!--            >-->
-    <!--              {{ `${key} ${item.operator} ${item.value.replace(/\n/g, " ")}` }}-->
-    <!--            </el-tag>-->
-    <!--          </div>-->
-    <!--        </el-form-item>-->
-    <!--        <div class="flex gap-x-4">-->
-    <!--          <el-select-->
-    <!--            v-model="customMatchRuleForm.name"-->
-    <!--            placeholder="请选择匹配项"-->
-    <!--            style="width: 220px"-->
-    <!--          >-->
-    <!--            <el-option-->
-    <!--              v-for="item of aclMatchList"-->
-    <!--              :key="item.value"-->
-    <!--              :label="item.label"-->
-    <!--              :value="item.value"-->
-    <!--            />-->
-    <!--          </el-select>-->
-    <!--          <el-select-->
-    <!--            v-model="customMatchRuleForm.operator"-->
-    <!--            placeholder="操作符"-->
-    <!--            style="width: 220px"-->
-    <!--          >-->
-    <!--            <el-option-->
-    <!--              v-for="item of aclMatchOperatorList"-->
-    <!--              :key="item.value"-->
-    <!--              :label="item.label"-->
-    <!--              :value="item.value"-->
-    <!--            />-->
-    <!--          </el-select>-->
-    <!--          <el-input-->
-    <!--            v-model="customMatchRuleForm.value"-->
-    <!--            type="textarea"-->
-    <!--            placeholder="一行一个匹配值，可为空"-->
-    <!--            :rows="3"-->
-    <!--            style="width: 220px"-->
-    <!--          />-->
-    <!--          <el-button-->
-    <!--            type="primary"-->
-    <!--            @click="-->
-    <!--              () => {-->
-    <!--                customRuleForm.matcher[customMatchRuleForm.name] = {-->
-    <!--                  operator: customMatchRuleForm.operator,-->
-    <!--                  value: customMatchRuleForm.value-->
-    <!--                };-->
-    <!--                customMatchRuleForm = {-->
-    <!--                  name: '',-->
-    <!--                  operator: '',-->
-    <!--                  value: ''-->
-    <!--                };-->
-    <!--              }-->
-    <!--            "-->
-    <!--          >-->
-    <!--            添加-->
-    <!--          </el-button>-->
-    <!--        </div>-->
-    <!--        <el-form-item label="执行过滤">-->
-    <!--          <el-radio-group>-->
-    <!--            <el-radio label="允许" value="allow" />-->
-    <!--            <el-radio label="拒绝" value="deny" />-->
-    <!--          </el-radio-group>-->
-    <!--        </el-form-item>-->
-    <!--      </el-form>-->
-    <!--      <template #footer>-->
-    <!--        <el-button type="primary" @click="() => {}"> 提交 </el-button>-->
-    <!--      </template>-->
-    <!--    </el-dialog>-->
+    <el-dialog v-model="customRuleModal" title="添加自定义规则">
+      <el-form label-width="100" :model="customRuleForm" label-position="left">
+        <el-form-item label="匹配条件">
+          <div class="flex gap-2 flex-wrap">
+            <el-tag
+              v-for="(item, key) in customRuleForm.matcher"
+              :key="key"
+              closable
+              type="primary"
+              @close="delete customRuleForm.matcher[key]"
+            >
+              {{ `${key} ${item.operator} ${item.value.replace(/\n/g, " ")}` }}
+            </el-tag>
+          </div>
+        </el-form-item>
+        <div class="flex gap-x-4">
+          <el-select
+            v-model="customMatchRuleForm.name"
+            placeholder="请选择匹配项"
+            style="width: 220px"
+          >
+            <el-option
+              v-for="item of aclMatchList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-select
+            v-model="customMatchRuleForm.operator"
+            placeholder="操作符"
+            style="width: 220px"
+          >
+            <el-option
+              v-for="item of aclMatchOperatorList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-input
+            v-model="customMatchRuleForm.value"
+            type="textarea"
+            placeholder="一行一个匹配值，可为空"
+            :rows="3"
+            style="width: 220px"
+          />
+          <el-button
+            type="primary"
+            @click="
+              () => {
+                customRuleForm.matcher[customMatchRuleForm.name] = {
+                  operator: customMatchRuleForm.operator,
+                  value: customMatchRuleForm.value
+                };
+                customMatchRuleForm = {
+                  name: '',
+                  operator: '',
+                  value: ''
+                };
+              }
+            "
+          >
+            添加
+          </el-button>
+        </div>
+        <div class="text-sm text-gray-400 my-8 text-center">
+          注意：多个匹配条件的关系为且，即所有条件都满足时才执行下面的过滤
+        </div>
+        <el-form-item label="执行过滤">
+          <el-radio-group v-model="customRuleForm.filter.type">
+            <el-radio
+              v-for="item of siteCustomRuleFilterList"
+              :key="item.label"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item
+          v-if="
+            [
+              'req_rate',
+              'browser_verify_auto',
+              'delay_jump_filter',
+              'click_filter',
+              'slide_filter',
+              'captcha_filter',
+              'rotate_filter',
+              '302_challenge'
+            ].includes(customRuleForm.filter.type)
+          "
+          label="是否拉黑"
+        >
+          <el-switch
+            v-model="customRuleBlock"
+            @change="
+              val => {
+                if (!val) {
+                  customRuleForm.filter.max_challenge = '11111';
+                  customRuleForm.filter.max_per_uri = '11111';
+                  customRuleForm.filter.within_second = '11';
+                } else {
+                  customRuleForm.filter.max_challenge =
+                    customRuleForm.filter.type === 'req_rate' ? '0' : '5';
+                  customRuleForm.filter.max_per_uri =
+                    customRuleForm.filter.type === 'req_rate' ? '0' : '';
+                  customRuleForm.filter.within_second =
+                    customRuleForm.filter.type === 'req_rate' ? '11' : '60';
+                }
+              }
+            "
+          />
+        </el-form-item>
+        <template v-if="customRuleForm.filter.type === 'req_rate'">
+          <el-form-item label="几秒内" label-width="200" label-position="left">
+            <el-input
+              v-model="customRuleForm.filter.within_second"
+              style="width: 220px"
+            />
+          </el-form-item>
+          <el-form-item
+            label="最大请求次数 (0表示直接拉黑)"
+            label-width="200"
+            label-position="left"
+          >
+            <el-input
+              v-model="customRuleForm.filter.max_per_uri"
+              style="width: 220px"
+            />
+          </el-form-item>
+          <el-form-item
+            label="单URL最大次数 (0表示直接拉黑)"
+            label-width="200"
+            label-position="left"
+          >
+            <el-input
+              v-model="customRuleForm.filter.max_challenge"
+              style="width: 220px"
+            />
+          </el-form-item>
+        </template>
+        <template v-if="customRuleForm.filter.type === 'url_auth'">
+          <el-form-item
+            label="鉴权方式"
+            label-width="200"
+            label-position="left"
+          >
+            <el-select
+              v-model="customRuleForm.filter.extra.mode"
+              style="width: 220px"
+            >
+              <el-option label="TypeA" value="TypeA" />
+              <el-option label="TypeB" value="TypeB" />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            label="密钥(16-32位)"
+            label-width="200"
+            label-position="left"
+          >
+            <el-input
+              v-model="customRuleForm.filter.extra.key"
+              style="width: 220px"
+            />
+          </el-form-item>
+          <el-form-item
+            label="签名参数名"
+            label-width="200"
+            label-position="left"
+          >
+            <el-input
+              v-model="customRuleForm.filter.extra.sign_name"
+              style="width: 220px"
+            />
+          </el-form-item>
+          <el-form-item
+            label="时间戳参数名"
+            label-width="200"
+            label-position="left"
+          >
+            <el-input
+              v-model="customRuleForm.filter.extra.time_name"
+              style="width: 220px"
+            />
+          </el-form-item>
+          <el-form-item
+            label="最大时间相差(秒)"
+            label-width="200"
+            label-position="left"
+          >
+            <el-input
+              v-model="customRuleForm.filter.extra.time_diff"
+              style="width: 220px"
+            />
+          </el-form-item>
+          <el-form-item
+            label="签名使用次数（0表示不限制）"
+            label-width="200"
+            label-position="left"
+          >
+            <el-input
+              v-model="customRuleForm.filter.extra.sign_use_times"
+              style="width: 220px"
+            />
+          </el-form-item>
+        </template>
+      </el-form>
+      <template #footer>
+        <el-button
+          type="primary"
+          @click="
+            () => {
+              customRuleList.push(customRuleForm);
+              customRuleForm = {
+                filter: {
+                  extra: {},
+                  max_challenge: '5',
+                  max_per_uri: '',
+                  type: '',
+                  within_second: '60'
+                },
+                matcher: {}
+              };
+              customRuleModal = false;
+            }
+          "
+        >
+          提交
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <style scoped>
